@@ -28,6 +28,7 @@ The PDB code is followed by ':' and thereafter comes the chain id. The ligand na
 In the sequence file, the sequence name for the PDB structure should be the same as provided in the ligand.txt file (see example below).
 
 >3WXB:A
+
 MGSSHHHHHHSSGLVPRGSHMGELRVRSVLVTGANRGIGLGFVQHLLALSNPPEWVFATCRDPKGQRAQELQKLASKHPNLVIVPLEVTDPASIKAAAASVGERLKGSGLNLLINNAGIARANTIDNETLKDMSEVYTTNTIAPLLLSQAFLPMLKKAAQENPGSGLSCSKAAIINISSTAGSIQDLYLWQYGQALSYRCSKAALNMLTRCQSMGYREHGIFCVALHPGWVKTDMGGTLEDKSRVTVDESVGGMLKVLSNLSEKDSGAFLNWEGKVMAW
 
 For example: python MSALigMap.py Lig Ligand_binding_samplefile.fasta ligand.txt
@@ -37,8 +38,8 @@ b. DNA binding site analysis:
 Usage: MSALigMap <DNA> <input.fasta> 
 Input.fasta: The input.fasta file to be provided is a fasta file containing protein sequences that includes sequences of PDB structures and non-PDB sequences. For the PDB sequence, the chain id should be mentioned following the PDB code (6KKS:A)
 >6KKS:A
-GNNEYKKGLWTVEEDKILMDYVKAHGKGHWNRIAKKTGLKRCGKSCRLRWMNYLSPNVKR
-GNFTEQEEDLIIRLHKLLGNRWSLIAKRVPGRTDNQVKNYWNTHLSKKLGIKDQKTKQS
+
+GNNEYKKGLWTVEEDKILMDYVKAHGKGHWNRIAKKTGLKRCGKSCRLRWMNYLSPNVKRGNFTEQEEDLIIRLHKLLGNRWSLIAKRVPGRTDNQVKNYWNTHLSKKLGIKDQKTKQS
 
 
 For example: python MSALigMap.py DNA DNA_binding_samplefile.fasta
