@@ -9,6 +9,7 @@ Two input files are supplied to MSALigMap.py: one containing multiple sequences 
 
 Below is an example shown how to run MSALigMap:
 To run Ligand or DNA analysis, the user needs to specify Lig or DNA as mentioned below.
+
 a. Ligand binding site analysis:
 
 Usage: MSALigMap <Lig> <Input.fasta> <Ligand.txt>
