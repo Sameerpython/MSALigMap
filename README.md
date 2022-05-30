@@ -5,6 +5,7 @@ MSALigMap is implemented in Python (3) and is run from the command line. To be a
 2. Installation of Clustal Omega and keep the ClustalO.exe in the same working directory
 
 Example:
+
 Two input files are supplied to MSALigMap.py: one containing multiple sequences of interest in fasta format and a second file in a tab-delimited format containing PDB id with chain information and ligand codes ( e.g. 3WXB:A	NDP).
 
 Below is an example shown how to run MSALigMap:
@@ -13,6 +14,7 @@ To run Ligand or DNA analysis, the user needs to specify Lig or DNA as mentioned
 a. Ligand binding site analysis:
 
 Usage: MSALigMap <Lig> <Input.fasta> <Ligand.txt>
+  
 Input.fasta: The input.fasta file to be provided is a fasta file containing protein sequences that includes sequences of PDB structures and non-PDB sequences
 Ligand.txt: The input file is a text file containing the PDB code with the chain id and ligand code (as provided in PDB) in tab-delimited format. 
 
