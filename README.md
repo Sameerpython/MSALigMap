@@ -49,9 +49,9 @@ For example: python MSALigMap.py DNA DNA_binding_samplefile.fasta
 # Run in Docker
 * sudo docker build -t msaligmap .
 
-## Non-interactive session
-* sudo docker run msaligmap:latest
-
 ## Interactive session
-* sudo docker run -ti msaligmap:latest
+* sudo docker run -p 80:80 -ti msaligmap:latest
+
+# The page will be available at
+* http://localhost/MSALigMap/HomePage.py
 
