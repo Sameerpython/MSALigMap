@@ -48,6 +48,7 @@ ADD *.py /opt/lampp/htdocs/MSALigMap/
 ADD *.jpg /opt/lampp/htdocs/MSALigMap/
 ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
 RUN chmod +x /opt/lampp/htdocs/MSALigMap/*.py
+RUN ln -s /usr/bin/clustalo 
 
 # Start the server
 ENV PATH=/usr/local/Anaconda3/bin:/opt/lampp/htdocs/MSALigMap:$PATH
