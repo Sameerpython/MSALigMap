@@ -43,3 +43,13 @@ GNNEYKKGLWTVEEDKILMDYVKAHGKGHWNRIAKKTGLKRCGKSCRLRWMNYLSPNVKRGNFTEQEEDLIIRLHKLLGN
 
 
 For example: python MSALigMap.py DNA DNA_binding_samplefile.fasta
+
+# Run in Docker
+* sudo docker build -t msaligmap .
+
+## Non-interactive session
+* sudo docker run msaligmap:latest
+
+## Interactive session
+* sudo docker run -ti msaligmap:latest
+
