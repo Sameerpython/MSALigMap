@@ -1,3 +1,5 @@
+# MSALigMap
+MSALigMap – a tool for mapping active site amino acids in PDB structures onto homologous sequences  
 MSALigMap (Multiple Sequence Alignment Ligand Mapping) is a tool for mapping active site amino acid residues that bind selected ligands or DNA on to target protein sequences of interest. To run ligand (small molecule) or DNA binding site analysis, the user needs to specify Lig or DNA respectively.
 MSALigMap is implemented in Python (3) and is run from the command line. To be able to use the tool one will need:
 
