@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Initialise apt-get
 RUN apt-get update
@@ -11,26 +11,23 @@ RUN apt-get install -y vim-tiny
 RUN apt-get install -y libgl1-mesa-glx
 RUN apt-get install -y cron
 RUN apt-get install -y clustalo
-RUN apt-get install -y python3.9
 
-
+# Set the working directory
 RUN mkdir -p /opt/MSALigMap
 WORKDIR /opt/MSALigMap
 
 # Install XAMPP
-RUN wget https://www.apachefriends.org/xampp-files/7.3.9/xampp-linux-x64-7.3.9-0-installer.run
-RUN chmod +x xampp-linux-x64-7.3.9-0-installer.run
-RUN sudo /opt/bindingdata/xampp-linux-x64-7.3.9-0-installer.run
+RUN wget https://downloadsapachefriends.global.ssl.fastly.net/8.1.6/xampp-linux-x64-8.1.6-0-installer.run
+RUN chmod +x xampp-linux-x64-8.1.6-0-installer.run
+RUN sudo /opt/MSALigMap/xampp-linux-x64-8.1.6-0-installer.run
 
 # Install Anaconda
-#RUN wget https://repo.anaconda.com/archive/Anaconda2-2019.10-Linux-x86_64.sh
-#RUN chmod +x Anaconda2-2019.10-Linux-x86_64.sh
-#RUN sudo ./Anaconda2-2019.10-Linux-x86_64.sh -b -p /usr/local/Anaconda2.7
-#RUN echo "PATH=/usr/local/Anaconda2.7/bin:$PATH" >> /etc/profile
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh
+RUN chmod +x Anaconda3-2022.05-Linux-x86_64.sh
+RUN ./Anaconda3-2022.05-Linux-x86_64.sh -b -p /usr/local/Anaconda3
 
 # Install python dependencies
-#RUN /usr/local/Anaconda2.7/bin/conda install -y -c conda-forge biopython
-#RUN export PATH=/usr/local/Anaconda2.7/bin:$PATH
+RUN /usr/local/Anaconda3/bin/conda install -y -c conda-forge biopython
 
 # Configure a con job to regularly remove SVG files
 RUN echo "* 0 * * * root rm /opt/lampp/htdocs/MSALigMap/tmp/*.svg" >> /etc/crontab
@@ -48,10 +45,11 @@ ADD httpd.conf /opt/lampp/etc/
 ADD *.py /opt/lampp/htdocs/MSALigMap/
 #ADD *.gif /opt/lampp/htdocs/MSALigMap/
 #ADD *.png /opt/lampp/htdocs/MSALigMap/
-#ADD *.jpg /opt/lampp/htdocs/MSALigMap/
-#ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
+ADD *.jpg /opt/lampp/htdocs/MSALigMap/
+ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
 RUN chmod +x /opt/lampp/htdocs/MSALigMap/*.py
 
 # Start the server
+ENV PATH=/usr/local/Anaconda3/bin:/opt/lampp/htdocs/MSALigMap:$PATH
 EXPOSE 80 
 CMD /opt/lampp/xampp start; service cron start; bash 
