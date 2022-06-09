@@ -50,6 +50,9 @@ ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
 RUN chmod +x /opt/lampp/htdocs/MSALigMap/*.py
 RUN ln -s /usr/bin/clustalo 
 
+# TO BE MOVED
+RUN apt-get install -y nano
+
 # Start the server
 ENV PATH=/usr/local/Anaconda3/bin:/opt/lampp/htdocs/MSALigMap:$PATH
 EXPOSE 80 
