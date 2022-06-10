@@ -69,7 +69,7 @@ print ("</ul>")
 
 
 print ("<div align='center'>")
-print ("<h2> Comparing the Binding Residues for the Selected Protein Structures</h2>")
+print ("<h2> Comparing the Binding Residues for the Selected Protein Sequences</h2>")
 print ("<div id='container1'>")
 
 
