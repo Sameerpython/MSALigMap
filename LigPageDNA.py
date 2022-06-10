@@ -23,7 +23,7 @@ import shutil
 from Bio import motifs 
 from Bio.Seq import Seq 
 import re
-sys.path.append('/Users/xhasam/anaconda2/lib')
+# sys.path.append('/Users/xhasam/anaconda2/lib')
 
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
@@ -72,22 +72,22 @@ print ("</ul>")
 print ("<div align='center'>")
 print ("<h2> Below is shown the mapped binding sites for the sequences </h2>")
 
-#print lig_content
 #capturing the entered pdb ids into list
 for i in text_content:
         text_content1=text_content.replace(' ', '')
         l=text_content1.split(',')
 # print l
 
+os.mkdir('/tmp/ProtDNA/')
 
-out_file='seqaligned1.fasta'
+out_file='/tmp/ProtDNA/seqaligned1.fasta'
 muscle='/usr/local/bin/muscle'
 clustalo='/usr/local/bin/clustalo'
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
 pdburl="https://files.rcsb.org/download/"
-PDB="PDB/"
+PDB="/tmp/ProtDNA/PDB/"
 pdb_seq_dict=OrderedDict()
 pdb_seq_dict_numbering=OrderedDict()
 pdb_seqfin=OrderedDict()
@@ -138,19 +138,14 @@ def merge_pdb_nonpdb(dict1,dict2):
     return combine
 PDB_ids_list= []
 Exp_dict = {}
-with open('WRKY.fasta', 'r') as f:
+with open('/tmp/ProtDNA/WRKY.fasta', 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
-        # print (record.id)
         ids_pdb=record.id.split(':')[:1]
-        # print (ids_pdb)
         chain_name=record.id.split(':')#[1:]
         if len(chain_name) > 1:
             pdb_code=chain_name[0]
             ext=chain_name[1]
             PDB_ids_list.append(pdb_code.lower()+':'+ext)
-            # print (record.id)
-            # print (pdb_code)
-            # print (ext)
 
             filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDB, file_format="pdb", overwrite=False)
         if len(chain_name) == 1:
@@ -162,7 +157,7 @@ with open('WRKY.fasta', 'r') as f:
         
         pdb_id.append(record.id)
     for data in os.listdir(PDB):
-        paths='PDB/'+ data
+        paths='/tmp/ProtDNA/PDB/'+ data
         idschange=paths.split("/")[1][3:]
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
         with open(paths, 'r') as f:
@@ -175,7 +170,6 @@ with open('WRKY.fasta', 'r') as f:
                         Exp_dict[pdbid_dict] = 'NMR'
                     elif lines[0]=='EXPDTA' and lines[1]=='X-RAY':#.startswith('EXPDTA    SOLUTION NMR'):
                         Exp_dict[pdbid_dict] = 'X-RAY'
-                    # print (Exp_dict)  
                     if 'NMR' in Exp_dict.values() :
                         
                         if lines[0]=='MODEL' and lines[1]=='1':#("MODEL        1"):
@@ -209,34 +203,24 @@ with open('WRKY.fasta', 'r') as f:
                                     pdb_seq_dict.setdefault(pdbid_dict, []).append(item1)
                                     pdb_seq_dict_numbering.setdefault(pdbid_dict, []).append(lines[5])
 
-# print (PDB_ids_list)
-# print ("pdb_seq_dict", pdb_seq_dict)
-# print ("pdb_seq_dict_numbering", pdb_seq_dict_numbering)
-# print('<br/>')
-# print('<br/>')
 for keys,vals in pdb_seq_dict.items():
     aas_string=''.join(map(str,vals))
     pdb_seqfin.setdefault(keys,[]).append(aas_string)
 
-# print (pdb_seqfin)
 
 combine=dict(list(non_pdb_seq_dictfin.items()) + list(pdb_seqfin.items()))
-# print (combine)
 
-with open('trimmedfasta.fasta', 'w') as files:
+with open('/tmp/ProtDNA/trimmedfasta.fasta', 'w') as files:
     for seqids, seqn in combine.items():
         files.write( ">" + seqids)
         files.write("\n")
         files.write (seqn[0])
         files.write("\n")
         
-#muscle_cline = MuscleCommandline(input="trimmedfasta.fasta", out=out_file)
-Omega_out = subprocess.call([clustalo, '--infile', 'trimmedfasta.fasta','--outfile',  out_file])
+Omega_out = subprocess.call([clustalo, '--infile', '/tmp/ProtDNA/trimmedfasta.fasta','--outfile',  out_file])
 seq1 = SeqIO.parse(out_file, 'fasta')
-SeqIO.write(seq1, "file_tabDNA.fasta", "tab")
+SeqIO.write(seq1, "/tmp/ProtDNA/file_tabDNA.fasta", "tab")
 record_seq_dict = SeqIO.to_dict(SeqIO.parse(out_file, "fasta"))
-# Sequence_aligned_df = pd.DataFrame(record_seq_dict)
-# PDB_Sequence_aligned_df = Sequence_aligned_df[PDB_ids_list]
 
 
 ## Downloading NUCplot
@@ -269,14 +253,12 @@ aa = [each_string.title() for each_string in aa]
 ##NUCPLOT
 DNA_binding_res_list2 = []
 DNA_binding_res_list1 = OrderedDict()
-with open("file_tabDNA.fasta",'r') as files:
+with open("/tmp/ProtDNA/file_tabDNA.fasta",'r') as files:
     for line in files:
         pdbcode1=line.split()[0]
-        # print (pdbcode1)
         pdbcode1_split=pdbcode1.split(':')
         if len(pdbcode1_split) >1:
             url = NUcplot_URL1 + pdbcode1_split[0] +NUcplot_URL2
-            # print (url)
 
             data = requests.get(url, allow_redirects=True)
             nuclplotfilename = pdbcode1_split[0] + '_Nucplot.txt'
@@ -287,16 +269,13 @@ with open("file_tabDNA.fasta",'r') as files:
             with open(nuclplotfilename, 'r') as file1:
                 for lines in file1:
                     if lines.startswith(tuple(aa)):
-                        # print (lines)
                         lines_split_aminoacid= lines.split()[0].split('(', 1)[1].split('*')[0]
-                        # print (lines_split_aminoacid)
                         if not lines_split_aminoacid in DNA_binding_res_list2:
                             DNA_binding_res_list2.append(lines_split_aminoacid.replace('))', ')'))
                             DNA_binding_res_list1.setdefault(pdbcode1, []).append(lines_split_aminoacid.replace('))', ')'))
                     aa1= [aa_string.replace('(','') for aa_string in aa]
                     t = filter(lambda x:x in lines, aa1)
                     for ts in t:
-                        # print (lines)
                         if not lines.startswith(tuple(aa)):
                             if not lines.startswith('%'):
                                 # print (lines)
@@ -307,22 +286,14 @@ with open("file_tabDNA.fasta",'r') as files:
                                     DNA_binding_res_list1.setdefault(pdbcode1, []).append(lines_split2_aa.replace('))', ')'))
             
                 
-# print (DNA_binding_res_list1)
-# print (len(DNA_binding_res_list1))
-# print('<br/>')
-# print('<br/>')
 
 DNA_binding_res_singlecode_dict={}
 for PDBidKey, aavalue in DNA_binding_res_list1.items():
     aa_temp =[]
-    # print (PDBidKey, aavalue)
     for aavalue1 in aavalue:
-        # print (aavalue1)
         first_slit_chain = aavalue1.split('(')
-        # print (first_slit_chain)
         aaminoacid = re.split(r'(\d+)', first_slit_chain[0])[0].upper()
         aaminoacidposition = re.split(r'(\d+)', first_slit_chain[0])[1]                     
-        # print (aaminoacid, aaminoacidposition)
         if aaminoacid in aa_dict:
                 
             aminoacid_position_value= aa_dict[aaminoacid] + '_' + aaminoacidposition
@@ -331,11 +302,7 @@ for PDBidKey, aavalue in DNA_binding_res_list1.items():
                 aa_temp.append(aminoacid_position_value)
                 DNA_binding_res_singlecode_dict.setdefault(PDBidKey, []).append(aminoacid_position_value)
             
-        # print (re.split('([^a-zA-Z0-9])', aavalue1))
-# print (DNA_binding_res_singlecode_dict)
 
-# print('<br/>')
-# print('<br/>')
 for ids,aa_numb in DNA_binding_res_singlecode_dict.items():
     for ids1, numb in pdb_seq_dict_numbering.items():
         if ids==ids1:
@@ -343,7 +310,6 @@ for ids,aa_numb in DNA_binding_res_singlecode_dict.items():
             for j in aa_numb:
                 numb_split=j.split('_')
                 updated_indexed_bindingsite.setdefault(ids,[]).append(numb.index(numb_split[1]))
-# print (updated_indexed_bindingsite)
 
 
 ####################
@@ -354,9 +320,8 @@ def Convert(string):
 lines_DSSP_list=[]
 lines_DSSP_dict ={}
 always_print = False
-with open("file_tabDNA.fasta",'r') as files:
+with open("/tmp/ProtDNA/file_tabDNA.fasta",'r') as files:
     for line in files:
-        # print (line)
         line1=line.split()[1:]
         SS_list=[]
         pdbids_chain=line.split()[:1]
@@ -367,13 +332,11 @@ with open("file_tabDNA.fasta",'r') as files:
             check_ids=''.join(pdbids_chain).split(':')[0]#[1:]
             
             pdb_chain=''.join(pdbids_chain).split(':')[1]
-            # print(pdb_chain)
             dssp_urlpart12_concat= dssp_urlpart1+check_ids+dssp_urlpart2
             dssp_allDBpage = requests.get(dssp_urlpart12_concat)
             dsspsource = BeautifulSoup(dssp_allDBpage.content, 'html.parser')
             for MRSallDB_link in dsspsource.find_all('a'):
                 for dssplink in MRSallDB_link:
-                    # print (dssplink)
                     if dssplink==(check_ids.upper()):
                         
                         dssp_href= str(MRSallDB_link).split(';')
@@ -386,13 +349,10 @@ with open("file_tabDNA.fasta",'r') as files:
                             dsspwebpagelink=requests.get(dssp_finalurl_concatenate)
                             for dssppagelines in dsspwebpagelink.iter_lines():
                                 lines_in_dssp = dssppagelines
-                                # lines_in_dssp=str(dssppagelines.decode('utf8')).strip()
-                                # print (lines_in_dssp)
                                 if not lines_in_dssp.startswith('<') and len(lines_in_dssp)>3:
                                     linesdssp_part1=lines_in_dssp.split()
                                     if len(linesdssp_part1)>5 and linesdssp_part1[2]==pdb_chain:
                                         if str(linesdssp_part1[4]).startswith(('H','B','E','G','I','T', 'S')):
-                                            # print(linesdssp_part1)
                                             if len(linesdssp_part1[4])==1:
                                                 aa_SS=linesdssp_part1[4]
                                                 SS_list.append(aa_SS)
@@ -402,13 +362,10 @@ with open("file_tabDNA.fasta",'r') as files:
                                         else:
                                             aa_NoSS='-'
                                             SS_list.append(aa_NoSS)
-                            # print ("SS_list",SS_list)
                             #Secondary structure adjustment according to its sequence alignment
                             if len(pdbids_chain_split) > 1:
-                                # print (line1)
                                 for seq_residues in line1:
                                     found2=[res_letter for res_letter in list(seq_residues)]
-                                    # print ("found2", found2)
                                 sscount=0
                                 sscount1=0
                                 num=0
@@ -416,7 +373,6 @@ with open("file_tabDNA.fasta",'r') as files:
                                 for  char,ssi in zip(found2,itertools.cycle(SS_list)): 
                                     
                                     if char!='-'  :
-                                        # print ("SS_list[num]", SS_list[num], num)
                                         SS_list_alignment_adjusted.append(SS_list[num])
                                         num+=1
                                         sscount+=1
@@ -431,34 +387,25 @@ with open("file_tabDNA.fasta",'r') as files:
         else:
             check_ids=''.join(pdbids_chain).split(':')[0]
             NonPDBseqID_print=''.join(check_ids)+'\t'+'\t'
-        # print (line1)
         aa_text1=list(str(line1[0]))
         aa_text=aa_text1#[:-2]
-        # print (check_ids, aa_text)
         aa_text_dict[check_ids]=aa_text
         for aa_t in range(0,len(''.join(aa_text)),60):
             AA_temp=[]
             AA_temp.append(''.join(aa_text)[aa_t:aa_t+60])
-            # print (check_ids,'--->',AA_temp[0])
             if check_ids.startswith('>'):
                 check_ids=''.join(check_ids.split('>'))
-                # print (check_ids,'--->',AA_temp[0])
                 Prot_AA.setdefault(check_ids, []).append(AA_temp[0])
             else:
-                # print (check_ids,'--->',AA_temp[0])
                 Prot_AA.setdefault(check_ids, []).append(AA_temp[0])
-            # print ("Prot_AA",Prot_AA)
 
 ####updating index number for DNA binding site based on alignment for the given sequences
 print('<br/>')
 print('<br/>')
 for  Hkey1,Hvalues1 in updated_indexed_bindingsite.items():  
-    # print (Hkey1,Hvalues1)
     H_count =0
     H_count1=0
-    # print ("Hkey1",Hkey1)
     Hkey1=str(Hkey1).split(':')[0]
-    # print (aa_text_dict.keys())
     if Hkey1 in aa_text_dict.keys():
         for H_X, H_i in enumerate(aa_text_dict[str(Hkey1).split(':')[0]]):
                 if H_i=='-':
@@ -492,8 +439,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
         
         if dictkeys in DSSP_SS:
             print("<tr style= 'border: 0'>")
-            # print("<td")
-            # print("</td>")
             print("<td style= 'border: 0;width=5%'>")
             DSS_ID_print1=dictkeys+'_Sec_Str'+'\t'
             print(DSS_ID_print1)
@@ -508,7 +453,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
         if dictkeys in DSSP_SS.keys():
             ss=DSSP_SS[dictkeys][itemlength]
             print("<td style= 'border: 0;width=80%'>")
-            # print("<pre>")
             for sec_str in ss:
                 
 
@@ -537,7 +481,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
                     other_SS="<span style='font-family:monospace;font-size:18px'>%s</span>"%sec_str
                     print(other_SS)
             print("</td>")
-            # print("</pre>")
             print("</tr>")
         print("<tr style= 'border: 0'>")
         print("<td style= 'border: 0';width=5%'>")
@@ -547,7 +490,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
         print("</td>")
         ##print secondary structure and sequences
         print("<td style= 'border: 0'; width=80%'>")
-        # print("<pre>")
         for i in Prot_AA[dictkeys][itemlength]:
             
             if i=='-':
@@ -578,7 +520,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
                         print(bolded)
                     if i.startswith(('C')):
                         bolded="<b><font color='yellow'><span style='font-family:monospace;font-size:18px'>%s</span></font>" %i+'</b>'
-                    #resindex+=1
                     count+=1
 
                     
@@ -592,7 +533,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
                 print(res_sizeNonPDB)
                
         print("</td>")
-        # print("</pre>")
         print("</tr>")
 
     print("<tr style= 'border: 0; heigth: 60px '>")
@@ -612,7 +552,6 @@ for H_NHkey in Alignment_adjusted_indexed_Hbindingsite.keys():
     for index_items in Alignment_adjusted_indexed_Hbindingsite[H_NHkey]:
         if index_items not in H_NHnew_list:
             H_NHnew_list.append(index_items)
-# print ("H_NHnew_list",H_NHnew_list)
 
 #making a dictionary for creating a weblogo
 weblogo_align=OrderedDict()
@@ -669,7 +608,6 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
         print("</td>")
         
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for H_NH_res in weblogo_align[H_NH_dictkeys]:
             if H_NH_ident_count in H_NH_identical_index:
                 H_NH_underlined="<SPAN STYLE='background-color:red; font-weight:bold; color:white'>%s</SPAN>" %H_NH_res
@@ -680,12 +618,9 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
                 print(H_NH_no_conse)
                 H_NH_ident_count+=1
     else:
-        #boxing.write("<tr>")
-        #boxing.write("<td>")
         print(H_NH_dictkeys)
         print("</td>")
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for H_NH_res in weblogo_align[H_NH_dictkeys]:
             if H_NH_ident_count in H_NH_identical_index:
                 H_NH_underlined1="<SPAN STYLE='background-color:red; font-weight:bold; color:white'>%s</SPAN>" %H_NH_res
@@ -696,7 +631,6 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
                 print(H_NH_no_conse1)
                 H_NH_ident_count+=1
         
-    # print("</pre>")
     print("</td>")
     print("</tr>")
 print("</table>") 

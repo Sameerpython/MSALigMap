@@ -45,7 +45,7 @@ print(" #container1{ width:1000px; height=1500px; line-height:1.6; font-size:22p
 
 print("</style>")
 
-print("<title>LiBiSCo</title>")
+print("<title>MSALigMap</title>")
 print("</head>")
 #print "<h1>CoFact<style=color:blue;>Comp</style></h1>"
 #print "<div align='center'>"

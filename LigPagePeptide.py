@@ -77,14 +77,16 @@ for i in text_content:
         text_content1=text_content.replace(' ', '')
         l=text_content1.split(',')
 # print l
-out_file='seqaligned1.fasta'
+
+os.mkdir('/tmp/ProtPep/')
+out_file='/tmp/ProtPep/seqaligned1.fasta'
 muscle='/usr/local/bin/muscle'
 clustalo='/usr/local/bin/clustalo'
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
 pdburl="https://files.rcsb.org/download/"
-PDB="PDB/"
+PDB="/tmp/ProtPep/PDB/"
 pdb_seq_dict=OrderedDict()
 pdb_seq_dict_numbering=OrderedDict()
 pdb_seqfin=OrderedDict()
@@ -127,17 +129,13 @@ for items_names in l:
     items_names_split= items_names.split('_')
     ligand_name= items_names_split[1]
     PDB_id = items_names_split[0].split(':')[0]
-    # print (PDB_id)
     PDB_code_ligand_dict[PDB_id]={}
-    # PDB_code_ligand_dict[PDB_id]['Chain']={}
-    # PDB_code_ligand_dict[PDB_id]['Ligand']={}
     Chain_id = items_names_split[0].split(':')[1] 
     PDB_code_ligand_dict[PDB_id]['Chain']=Chain_id
     PDB_code_ligand_dict[PDB_id]['Ligand']=ligand_name
     pdbid_lig.setdefault(items_names_split[0],[]).append(ligand_name)
-# print ('pdbid_lig11',pdbid_lig)   
-# print (PDB_code_ligand_dict)
-# #capturing the entered pdb ids into list
+
+
 # fileitem = form['filename']
 
 # # with open( 'Applications/XAMPP/xamppfiles/htdocs/MSALigMap/sequence1.fasta', 'w')  as f:
@@ -166,7 +164,7 @@ def merge_pdb_nonpdb(dict1,dict2):
     combine.update(combine)
     return combine
 
-with open('peptideseq.fasta', 'r') as f:
+with open('/tmp/ProtPep/peptideseq.fasta', 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
         ids_pdb=record.id.split(':')[:1]
         if len(''.join(ids_pdb)) == 4:
@@ -182,12 +180,9 @@ with open('peptideseq.fasta', 'r') as f:
         
         pdb_id.append(record.id)
     for data in os.listdir(PDB):
-        paths='PDB/'+ data
+        paths='/tmp/ProtPep/PDB/'+ data
         idschange=paths.split("/")[1][3:]
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
-        # for record in SeqIO.parse(paths, "pdb-atom"):
-        #     pdbscode=record.id.split(':')[0]
-        #     if record.annotations["chain"] == PDB_code_ligand_dict[pdbscode]['Chain']:
                 
         with open(paths, 'r') as f:
             for line in f:
@@ -205,16 +200,7 @@ with open('peptideseq.fasta', 'r') as f:
                             pdb_seq_dict_numbering.setdefault(pdbid_dict, []).append(lines[5])
 print("<br/>")
 print("<br/>")
-# print ("pdb_seq_dict", pdb_seq_dict)
-# print ("pdb_seq_dict_numbering", pdb_seq_dict_numbering)   
 
-# for record in SeqIO.parse('PDB/pdb3o26.ent', "pdb-atom"):
-#     pdbscode=record.id.split(':')[0]
-#     record.annotations
-#     print (pdbscode)
-#     print (PDB_code_ligand_dict[pdbscode]['Chain'])
-#     if record.annotations["chain"] == PDB_code_ligand_dict[pdbscode]['Chain']:
-#         print('structure sequence',str(record.seq))
 
 
 for keys,vals in pdb_seq_dict.items():
@@ -223,28 +209,26 @@ for keys,vals in pdb_seq_dict.items():
  
 
 combine=dict(list(non_pdb_seq_dictfin.items()) + list(pdb_seqfin.items()))
-with open('trimmedfasta.fasta', 'w') as files:
+with open('/tmp/ProtPep/trimmedfasta.fasta', 'w') as files:
     for seqids, seqn in combine.items():
         files.write( ">" + seqids)
         files.write("\n")
         files.write (seqn[0])
         files.write("\n") 
 
-Omega_cline = subprocess.call([clustalo, '--infile', 'trimmedfasta.fasta', '--outfile', out_file])
+Omega_cline = subprocess.call([clustalo, '--infile', '/tmp/ProtPep/trimmedfasta.fasta', '--outfile', out_file])
 
-with open('file_tab.txt', 'w') as files_tab:
+with open('/tmp/ProtPep/file_tab.txt', 'w') as files_tab:
     for record in SeqIO.parse(out_file, 'fasta'):
         tabform='{}\t{}'.format(record.description, record.seq)
         files_tab.write(tabform)
         files_tab.write('\n')
 
 #Preparing PdbSum Url with selected PDB ids
-# print (pdbid_lig)
 for ids,lig in pdbid_lig.items():
     ids_splitslig=str(ids).split(':')[0]
     pdbsumurl=pdbsum_URL+ids_splitslig+pdbsum_URL2
     pdbsum_dict.setdefault('%s'%ids,[]).append(pdbsumurl)
-# print ("pdbsum_dict", pdbsum_dict)
 #Extracting the Href links from PDBSum home page for the selected PDB ids and Ligands using BeautifulSoup
 
 mydictcheck=OrderedDict()
@@ -252,12 +236,10 @@ pdbsum_peptide_url1= 'http://www.ebi.ac.uk/thornton-srv/databases/cgi-bin/pdbsum
 pdbsum_peptide_url2= '&template=interfaces.html&c=999'
 
 for pdbpep,lid in pdbid_lig.items():
-    # print ("lurl.split(':')[0]", pdbpep,lid)
     pdbid_pep = pdbpep.split(':')[0]
     chain_first = pdbpep.split(':')[1]
     chain_second = lid[0]
     pdbsum_peptide_concaat_url = pdbsum_peptide_url1 + pdbid_pep + pdbsum_peptide_url2
-    # print (pdbsum_peptide_concaat_url)
     page = requests.get(pdbsum_peptide_concaat_url)
     
     chainurl1 = '/thornton-srv/databases/pdbsum/templates/gif/chain' + chain_first + '.jpg'
@@ -265,31 +247,23 @@ for pdbpep,lid in pdbid_lig.items():
     temp_ebiurl = []
     soup = BeautifulSoup(page.content, 'html.parser')
     for h in soup.find_all('a', class_='menuClass' ):
-        # print (h,"-->",str(h).split()[2].split('"')[1])
         if chainurl1 in str(h) and chainurl2 in str(h):
-            # if chainurl2 in str(h):
-            # print (h['href'])
             if not h['href'] in temp_ebiurl:
                 temp_ebiurl.append(h['href'])
-                # print (temp_ebiurl)
             for temp_ebiurl1 in temp_ebiurl:
                 linkfin="http://" + ebiurl + temp_ebiurl1
-                # print (linkfin)
                 temp_ebiurl2 = []
                 page2 = requests.get(linkfin)
                 soup2 = BeautifulSoup(page2.content, 'html.parser')
                 for h2 in soup2.find_all('a'):
-                    # print (h2)
                     search_1= '/thornton-srv/databases/cgi-bin/pdbsum/GetIface.pl?pdb='
                     search_2 = 'List of interactions'
                     if search_1 in str(h2) and search_2 in str(h2):
-                        # print (h2['href'])
                         
                         if not h2['href'] in temp_ebiurl2:
                             temp_ebiurl2.append(h2['href'])
                             pep_pep_interactionlink ="http://www.ebi.ac.uk" + h2['href']
                             mydictcheck[pdbpep]=pep_pep_interactionlink
-# print ("mydictcheck",mydictcheck)
 
 #selecting common ligand atoms that are hydrogen bonded in selected PDB structures
 H_printing = False
@@ -311,7 +285,6 @@ for pdbsumids, pdbsumlink in mydictcheck.items():
                 H_atomlines2=H_atomlines1.split()
                 H_atomlines2 = [w1.decode('utf8').replace('b', '') for w1 in H_atomlines2]
                 H_atm_sel=H_atomlines2[3]
-                # print ("H_atomlines2[5]",H_atomlines2[5] , "pdbsumids_chain", pdbsumids_chain)
                 if pdbsumids_chain==H_atomlines2[5]:
                     concat_aa_no=H_atm_sel+"_"+H_atomlines2[4]
                     if concat_aa_no not in check_aa:
@@ -321,7 +294,8 @@ for pdbsumids, pdbsumlink in mydictcheck.items():
                             H_atm_sel=items_aa+"_"+H_atomlines2[4]
                             H_atoms_commoncomp.setdefault(pdbsumids,[]).append(H_atm_sel)
     check_aa=[]
-# print ("H_atoms_commoncomp",H_atoms_commoncomp)
+
+
 NONH_printing = False
 NONHatoms_commoncomp={}
 
@@ -331,7 +305,6 @@ for NONHpdbsumids,NONHpdbsumlink in mydictcheck.items():
     weblink1=requests.get(NONHlinks_sel1)
     for NONHatomlines in weblink1.iter_lines():
         NONHatomlines1=NONHatomlines.strip()
-        # print (NONHatomlines1)
         if NONHatomlines1.startswith(b"Non-bonded contacts"):
             NONH_printing = True
             
@@ -342,47 +315,34 @@ for NONHpdbsumids,NONHpdbsumlink in mydictcheck.items():
                 
                 NONHatomlines2=NONHatomlines1.split()
                 NONHatomlines2 = [w.decode('utf8').replace('b', '') for w in NONHatomlines2]
-                # print(NONHatomlines2)
                 NONHatm_sel=NONHatomlines2[3]
                 if NONHatomlines2[5]==NONHpdbsumids_chain:
                    NONHconcat_aa_no=NONHatm_sel+"_"+ NONHatomlines2[4]
                    if NONHconcat_aa_no not in NONHcheck_aa:
-                       # print (NONHconcat_aa_no)
                        NONHcheck_aa.append(NONHconcat_aa_no)
                        found_aa= (aa_dict[key] for key in aa_dict.keys() if key == NONHatomlines2[3])
                        for items_aa in found_aa:
                            NONH_atm_sel=items_aa+"_"+NONHatomlines2[4]
                            NONHatoms_commoncomp.setdefault(NONHpdbsumids,[]).append(NONH_atm_sel)
     NONHcheck_aa=[]                    
-# print ("NONHatoms_commoncomp",NONHatoms_commoncomp)
-# print (pdb_seq_dict_numbering)
+
 for ids,aa_numb1 in H_atoms_commoncomp.items():
     aa_numb= [w3.replace('u', '') for w3 in aa_numb1]
-    # print (ids,aa_numb)
     for ids1, numb in pdb_seq_dict_numbering.items():
         if ids==ids1.upper():
-        #if ids==str(ids1).split(':')[0]:
             for j in aa_numb:
-                # print (aa_numb)
                 numb_split=j.split('_')
                 updated_indexed_bindingsite.setdefault(ids,[]).append(numb.index(numb_split[1]))
 
-# print ("updated_indexed_bindingsite",   updated_indexed_bindingsite)             
 for ids_1,aa_numb1 in NONHatoms_commoncomp.items():
     for ids2, numb2 in pdb_seq_dict_numbering.items():
-        # print ("ids", ids_1,ids2)
         if ids_1==ids2.upper():
-        #if ids_1==str(ids2).split(':')[0]:
             for j1 in aa_numb1:
-                # print (j1)
                 numb_split1=j1.split('_')
-                # print (numb_split1)
                 updated_indexed_NONHbindingsite.setdefault(ids_1,[]).append(numb2.index(numb_split1[1]))
 
-# print ("updated_indexed_bindingsite",   updated_indexed_NONHbindingsite)  
 
-# print ("updated_indexed_NONHbindingsite", updated_indexed_NONHbindingsite)
-with open("file_tab.txt",'r') as files:
+with open("/tmp/ProtPep/file_tab.txt",'r') as files:
     for line in files:
         
         line1=line.split()[1:]
@@ -395,7 +355,6 @@ with open("file_tab.txt",'r') as files:
             check_ids=''.join(pdbids_chain).split(':')[0]#[1:]
             
             pdb_chain=''.join(pdbids_chain).split(':')[1]
-            # print(pdb_chain)
             dssp_urlpart12_concat= dssp_urlpart1+check_ids+dssp_urlpart2
             
             dssp_allDBpage = requests.get(dssp_urlpart12_concat)
@@ -412,27 +371,21 @@ with open("file_tab.txt",'r') as files:
                             dssp_finalurl_concatenate= dssp_final_url1 + nr_number+ dssp_final_url2+check_ids.upper()
                             dsspwebpagelink=requests.get(dssp_finalurl_concatenate)
                             for dssppagelines in dsspwebpagelink.iter_lines():
-                                # print (dssppagelines)
                                 lines_in_dssp = dssppagelines
-                                # lines_in_dssp=str(dssppagelines.decode('utf8')).strip()
                                 
                                 if not lines_in_dssp.startswith('<') and len(lines_in_dssp)>3:
                                     linesdssp_part1=lines_in_dssp.split()
                                     if len(linesdssp_part1)>5 and linesdssp_part1[2]==pdb_chain:
                                         if str(linesdssp_part1[4]).startswith(('H','B','E','G','I','T', 'S')):
-                                            # print(linesdssp_part1)
                                             aa_SS=linesdssp_part1[4]
                                             SS_list.append(aa_SS)
                                         else:
                                             aa_NoSS='-'
                                             SS_list.append(aa_NoSS)
-                            # print ("SS_list",SS_list)
                             #Secondary structure adjustment according to its sequence alignment
                             if len(pdbids_chain_split) > 1:
-                                # print (line1)
                                 for seq_residues in line1:
                                     found2=[res_letter for res_letter in list(seq_residues)]
-                                    # print ("found2", found2)
                                 sscount=0
                                 sscount1=0
                                 num=0
@@ -440,7 +393,6 @@ with open("file_tab.txt",'r') as files:
                                 for  char,ssi in zip(found2,itertools.cycle(SS_list)): 
                                     
                                     if char!='-'  :
-                                        # print ("SS_list[num]", SS_list[num], num)
                                         SS_list_alignment_adjusted.append(SS_list[num])
                                         num+=1
                                         sscount+=1
@@ -473,7 +425,6 @@ with open("file_tab.txt",'r') as files:
 for  Hkey1,Hvalues1 in updated_indexed_bindingsite.items():  
     H_count =0
     H_count1=0
-    # print ("Hkey1",Hkey1)
     Hkey1=str(Hkey1).split(':')[0]
     if Hkey1.lower() in aa_text_dict.keys():
         for H_X, H_i in enumerate(aa_text_dict[str(Hkey1.lower()).split(':')[0]]):
@@ -524,8 +475,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
         if dictkeys in DSSP_SS:
             
             print("<tr style= 'border: 0'>")
-            # print("<td")
-            # print("</td>")
             print("<td style= 'border: 0;width=5%'>")
             DSS_ID_print1=dictkeys+'_Sec_Str'+'\t'
             print(DSS_ID_print1)
@@ -541,9 +490,7 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
         if dictkeys in DSSP_SS.keys():
             
             ss=DSSP_SS[dictkeys][itemlength]
-            # print (ss)
             print("<td style= 'border: 0;width=80%'>")
-            # print("<pre>")
             for sec_str in ss:
                 
                 
@@ -572,19 +519,15 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
                     other_SS="<span style='font-family:monospace;font-size:18px'>%s</span>"%sec_str
                     print(other_SS)
         print("</td>")
-        # print("</pre>")
         print("</tr>")
         print("<tr style= 'border: 0'>")
         print("<td style= 'border: 0';width=5%'>")
-        # print('<br/>')
         dictkeys2=dictkeys+'\t'
         dictkeys1="<text-align='left'>%s" %dictkeys2
         print(dictkeys1)
         print("</td>")
         ##print secondary structure and sequences
         print("<td style= 'border: 0'; width=80%'>")
-        # print("<pre>")
-        # print (Prot_AA[dictkeys][itemlength])
         for i in Prot_AA[dictkeys][itemlength]:
             
             
@@ -593,9 +536,6 @@ for itemlength in range(len(Prot_AA[SeqID_ref])):
                 print(res_size)
                 count+=1
                 gapcount+=1
-                # print ('dictkeys',dictkeys)
-                # print ('Alignment_adjusted_indexed_Hbindingsite',Alignment_adjusted_indexed_Hbindingsite.keys())
-                # print ('Alignment_adjusted_indexed_NONHbindingsite.keys()',Alignment_adjusted_indexed_NONHbindingsite.keys())
             elif dictkeys.upper() in Alignment_adjusted_indexed_Hbindingsite.keys() or dictkeys.upper() in Alignment_adjusted_indexed_NONHbindingsite.keys():
                 if count in Alignment_adjusted_indexed_Hbindingsite[dictkeys.upper()]: #and not Alignment_adjusted_indexed_NONHbindingsite[dictkeys]:
                     if i.startswith(('A','I','L','M','V')):
@@ -672,17 +612,17 @@ print("</table>")
 ## making of Weblog and binding residues alignment
 # merginf og hydrogen and nonhydrogen bondong residues        
 mergeH_H_NHddict= {key: value + Alignment_adjusted_indexed_NONHbindingsite[key] for key, value in Alignment_adjusted_indexed_Hbindingsite.items()}
-# print (Alignment_adjusted_indexed_NONHbindingsite)
-# print ("mergeH_H_NHddict", mergeH_H_NHddict)
+
 #making a unique list for each key in dictionary by removing duplicate items in the list
 unique_mergeddict_H_NH= {k:sorted(set(j),key=j.index) for k,j in mergeH_H_NHddict.items()}
+
 #making a list of binding residue indexes (according to aligned positions) from unique_mergeddict
 H_NHnew_list=[]
 for H_NHkey in unique_mergeddict_H_NH.keys():
     for index_items in unique_mergeddict_H_NH[H_NHkey]:
         if index_items not in H_NHnew_list:
             H_NHnew_list.append(index_items)
-# print ("H_NHnew_list",H_NHnew_list)
+
 #making a dictionary for creating a weblogo
 weblogo_align=OrderedDict()
 weblogo_gap_to_X=OrderedDict()
@@ -700,8 +640,6 @@ for pdbid in aa_text_dict.keys():
             weblogo_gap_to_X.setdefault(pdbid, []).append(residuesX)# dictionary where gaps are replaced with X
         
 
-# print ("aa_text_dict", aa_text_dict)
-# print ("weblogo_gap_to_X", weblogo_gap_to_X)
 #### For hydrongen bonded interactions only
 H_new_list=[]
 for key in Alignment_adjusted_indexed_Hbindingsite.keys():
@@ -713,10 +651,8 @@ H_weblogo_align=OrderedDict()
 H_weblogo_gap_to_X=OrderedDict()
 
 for H_pdbid in aa_text_dict.keys():
-    # print ("H_pdbid", H_pdbid)
     for H_num in sorted(H_new_list):
         H_residues=aa_text_dict[H_pdbid][H_num]
-        # print ("H_residues", H_residues)
         H_weblogo_align.setdefault(H_pdbid, []).append(H_residues)
         if aa_text_dict[H_pdbid][H_num]!='-':
             H_residuesnew=aa_text_dict[H_pdbid][H_num]
@@ -729,17 +665,14 @@ for H_pdbid in aa_text_dict.keys():
 print("<div align='center'><b>Alignment of hydrogen bonded interacting residues</b></div>")
 print("<br/>")
 
-#print("<table align='center'>")
 
 H_identical_index=[]
 for H_ind, H_elems in enumerate(zip(*H_weblogo_align.values())):
-        # print ("%d %s" % (H_ind, H_elems))
         
         if H_elems[1:] == H_elems[:-1]:
             H_identical_index.append(H_ind)
 
 
-#SeqID_ref= list(sorted(H_weblogo_align.keys()))[0]
 print("<table style= 'border: 0'>")
 for H_dictkeys in sorted(H_weblogo_align.keys()):
     print("<tr style= 'border: 0'>")
@@ -752,14 +685,12 @@ for H_dictkeys in sorted(H_weblogo_align.keys()):
         print("</td>")
         
         print("<td>")
-        # print("<pre>")
         for H_res in H_weblogo_align[H_dictkeys]:
             if H_ident_count in H_identical_index:
                 H_underlined="<SPAN STYLE='background-color:red;font-family:monospace;font-size:18px; font-weight:bold; color:white'>%s</SPAN>" %H_res
                 print(H_underlined)
                 H_ident_count+=1
             else:
-                #H_no_conse="<b><SPAN STYLE='text-decoration:overline; font-weight:bold; color:#FF1493'>%s</SPAN>" %H_res+'</b>'
                 H_no_conse="<b><SPAN STYLE='background-color:powderblue;font-family:monospace;font-size:18px; font-weight:bold; color:black'>%s</SPAN>" %H_res+'</b>'
                 print(H_no_conse)
                 H_ident_count+=1
@@ -767,7 +698,6 @@ for H_dictkeys in sorted(H_weblogo_align.keys()):
         print(H_dictkeys)
         print("</td>")
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for H_res in H_weblogo_align[H_dictkeys]:
             if H_ident_count in H_identical_index:
                 H_underlined1="<SPAN STYLE='background-color:red;font-family:monospace;font-size:18px; font-weight:bold; color:white'>%s</SPAN>" %H_res
@@ -778,7 +708,6 @@ for H_dictkeys in sorted(H_weblogo_align.keys()):
                 print(H_no_conse1)
                 H_ident_count+=1
         
-    # print("</pre>")
     print("</td>")
     print("</tr>")
 print("</table>")
@@ -848,7 +777,6 @@ for NH_dictkeys in sorted(NH_weblogo_align.keys()):
         print("</td>")
         
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for NH_res in NH_weblogo_align[NH_dictkeys]:
             if NH_ident_count in NH_identical_index:
                 NH_underlined="<SPAN STYLE='background-color:red;font-family:monospace;font-size:18px; font-weight:bold; color:white'>%s</SPAN>" %NH_res
@@ -862,7 +790,6 @@ for NH_dictkeys in sorted(NH_weblogo_align.keys()):
         print(NH_dictkeys)
         print("</td>")
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for NH_res in NH_weblogo_align[NH_dictkeys]:
             if NH_ident_count in NH_identical_index:
                 NH_underlined1="<SPAN STYLE='background-color:red;font-family:monospace;font-size:18px; font-weight:bold; color:white'>%s</SPAN>" %NH_res
@@ -873,7 +800,6 @@ for NH_dictkeys in sorted(NH_weblogo_align.keys()):
                 print(NH_no_conse1)
                 NH_ident_count+=1
         
-    # print("</pre>")
     print("</td>")
     print("</tr>")
 print("</table>")
@@ -919,7 +845,6 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
         print("</td>")
         
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for H_NH_res in weblogo_align[H_NH_dictkeys]:
             if H_NH_ident_count in H_NH_identical_index:
                 H_NH_underlined="<SPAN STYLE='background-color:red;font-family:monospace;font-size:18px; font-weight:bold; color:white'>%s</SPAN>" %H_NH_res
@@ -933,7 +858,6 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
         print(H_NH_dictkeys)
         print("</td>")
         print("<td style= 'border: 0'>")
-        # print("<pre>")
         for H_NH_res in weblogo_align[H_NH_dictkeys]:
             if H_NH_ident_count in H_NH_identical_index:
                 H_NH_underlined1="<SPAN STYLE='background-color:red;font-family:monospace;font-size:18px; font-weight:bold; color:white'>%s</SPAN>" %H_NH_res
@@ -944,7 +868,6 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
                 print(H_NH_no_conse1)
                 H_NH_ident_count+=1
         
-    # print("</pre>")
     print("</td>")
     print("</tr>")
 print("</table>")
@@ -964,9 +887,9 @@ print("</table>")
 # print("<br/>")
 
 os.remove(out_file) 
-os.remove('trimmedfasta.fasta') 
-shutil.rmtree('obsolete') 
-shutil.rmtree('PDB')
+os.remove('/tmp/ProtPep/trimmedfasta.fasta') 
+shutil.rmtree('/tmp/ProtPep/obsolete') 
+shutil.rmtree('/tmp/ProtPep/PDB')
 
 print ("</body>")
 print ("</html>")

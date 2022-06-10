@@ -18,17 +18,17 @@ print ("<head>")
 
 print ("<style>")
 #header styling
-print ("""
-.images{
-    width: 100%;
-    height: 200px;
-    background-image: url('Pic.gif') ;
-    background-size: cover;
-    padding-left: 80px;
+# print ("""
+# .images{
+#     width: 100%;
+#     height: 200px;
+#     background-image: url('Pic.gif') ;
+#     background-size: cover;
+#     padding-left: 80px;
     
-}
+# }
 
-""")
+# """)
 #########
 
 print ("div.container { width:100%; border: 1px solid grey;}")
@@ -48,7 +48,7 @@ print (".row:after {content: "";display: table;clear: both;}")
 
 print ("</style>")
 
-print ("<title>LiBiSCo</title>")
+print ("<title>MSALigMap</title>")
 print ("</head>")
 
 
@@ -86,16 +86,25 @@ print ("<div class='row'>")
 print ("  <div class='column'>")
 print ("<IMG SRC='SH3.jpeg' ALIGN='top' width=120px height=120px >")
 print ("<p><b>Sameer Hassan</b></p>")
-print  ("<p>Postdoc Researcher</p>")
+print  ("<p>Researcher</p>")
 print ("<p>Department of Biosciences and Nutrition</p>")
 print ("<p>Email: sameer.hassan@ki.se</p>")
 print ("</div>")
+
 print ("<div class='column'>")
 print ("<IMG SRC='MT.jpg' ALIGN='top' width=120px height=120px >")
 print ("<p><b>Mats Topel</b></p>")
 print  ("<p>Researcher</p>")
 print ("<p>Department of Marine Sciences</p>")
 print ("<p>Email: mats.topel@marine.gu.se</p>")
+print ("</div>")
+
+print ("  <div class='column'>")
+print ("<IMG SRC='Sameena.jpeg' ALIGN='top' width=120px height=120px >")
+print ("<p><b>Haleemath Sameena Sameer</b></p>")
+print  ("<p>Master Student, Department of Computer and Systems Sciences</p>")
+print ("<p>Stockholm University</p>")
+print ("<p>Email: sameenah.tm@gmail.com </p>")
 print ("</div>")
 print ("</div>")
 print ("</div>")

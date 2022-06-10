@@ -19,17 +19,17 @@ print ("<head>")
 
 print ("<style>")
 #header styling
-print ("""
-.images{
-    width: 100%;
-    height: 200px;
-    background-image: url('Pic.gif') ;
-    background-size: cover;
-    padding-left: 80px;
+# print ("""
+# .images{
+#     width: 100%;
+#     height: 200px;
+#     background-image: url('Pic.gif') ;
+#     background-size: cover;
+#     padding-left: 80px;
     
-}
+# }
 
-""")
+# """)
 #########
 
 print ("div.container { width:100%; border: 1px solid grey;}")
