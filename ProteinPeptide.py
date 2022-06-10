@@ -74,14 +74,17 @@ print ("<div id='container1'>")
 
 
 
-print ("<h2> Protein - DNA binding Site Mapping</h1>")
-
+print ("<h2> Protein - Peptide Binding Site Mapping</h1>")
 
 print ("<p> Upload protein sequences in fasta format:</p>")
-print  ("<form action='LigPageDNA.py' method = 'post' target = '_blank'>")
+print  ("<form enctype='multipart/form-data' action='LigPagePeptide.py' method = 'post' >")
 print  ("<input type='file' id='myFile' name='filename'>")
 
-print (" <p><input type = 'submit' value = 'Submit' /></p>")
+print ("<p> Enter PDB ids and Ligand ids (eg: 2AN6:A_E):</p>")
+print  ("<textarea rows='2' cols='10' name = 'textcontent' cols = '10' rows = '10'>")
+print  ("</textarea>")
+
+print (" <p><input type = 'submit' value = 'Upload' /></p>")
 
 print  (" </form>")
 print ("</div>")
