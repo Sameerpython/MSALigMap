@@ -39,39 +39,39 @@ else:
 #else:
 #   lig_content = "Not entered"
 
-
-print "Content-type:text/html\r\n\r\n"
-print "<html>"
-print "<head>"
+print ("Content-type:text/html\r\n\r\n")
+print ("<html>")
+print ("<head>")
 
 #HTML style details for web page
-print "<style>"
-print "ul{list-style-type: none;margin: 0;padding: 0; overflow: hidden;background-color: #333333;}"
-print "li{float:left;}"
-print "li a {display: block;color: white;text-align: center;padding: 16px;font-size:20px; text-decoration: none;}"
-print "li a:hover { background-color: #111111;}"
-print "table, th, td { border: 2px solid black;}"
-print ".footer { position: absolute; left: 0; bottom: 0; width: 100%; height:60px;  background-color: #808080; color: white; text-align: center; }"
-print "</style>"
+print( "<style>")
+print ("ul{list-style-type: none;margin: 0;padding: 0; overflow: hidden;background-color: #333333;}")
+print ("li{float:left;}")
+print ("li a {display: block;color: white;text-align: center;padding: 16px;font-size:20px; text-decoration: none;}")
+print ("li a:hover { background-color: #111111;}")
+print ("table, th, td { border: 2px solid black;}")
+print (".footer { position: absolute; left: 0; bottom: 0; width: 100%; height:60px;  background-color: #808080; color: white; text-align: center; }")
+print ("</style>")
 #Style ends here
 
-print "<title>LiBiSCo</title>"
-print "</head>"
+print ("<title>MSALigMap</title>")
+print ("</head>")
 #print "<h1>CoFact<style=color:blue;>Comp</style></h1>"
-print "<div align='center'>"
-print "<img src='Pic.gif' align='middle' width='80%' height='200'"
-print "</div>"
-print "<body>"
-print "<ul>"
-print "<li><a href='HomePage.py'>Home</a></li>"
-print "<li><a href='ProteinLigand.py'>Protein-Ligand</a></li>"
-print "<li><a href='ProteinDNA.py'>Protein-DNA</a></li>"
-print "<li><a href='ProteinPeptide.py'>Protein-Peptide</a></li>"
-print "<li><a href=''>Contact</a></li>"
-print "</ul>"
-print "<div align='center'>"
-print "<h2> Below is shown the mapped binding sites for the sequences </h2>"
-#print lig_content
+print ("<div align='center'>")
+print ("<img src='Pic.gif' align='middle' width='80%' height='200'")
+print ("</div>")
+print ("<body>")
+print ("<ul>")
+print ("<li><a href='HomePage.py'>Home</a></li>")
+print ("<li><a href='ProteinLigand.py'>Protein-Ligand</a></li>")
+print ("<li><a href='ProteinDNA.py'>Protein-DNA</a></li>")
+print ("<li><a href='ProteinPeptide.py'>Protein-Peptide</a></li>")
+print ("<li><a href=''>Contact</a></li>")
+print ("</ul>")
+print ("<div align='center'>")
+print ("<h2> Below is shown the mapped binding sites for the sequences </h2>")
+
+
 #capturing the entered pdb ids into list
 for i in text_content:
         text_content1=text_content.replace(' ', '')
@@ -968,5 +968,5 @@ os.remove('trimmedfasta.fasta')
 shutil.rmtree('obsolete') 
 shutil.rmtree('PDB')
 
-print "</body>"
-print "</html>"
+print ("</body>")
+print ("</html>")
