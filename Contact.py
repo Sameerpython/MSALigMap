@@ -103,7 +103,7 @@ print("<div>")
 
 print("<div class='container4'>")
 print ("<p><b>Sameer Hassan</b></p>")
-print  ("<p>Postdoc Researcher</p>")
+print  ("<p>Researcher</p>")
 print ("<p>Department of Biosciences and Nutrition</p>")
 print ("<p>Email: sameer.hassan@ki.se</p>")
 print ("</div>")
