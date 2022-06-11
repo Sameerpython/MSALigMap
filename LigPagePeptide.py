@@ -78,15 +78,22 @@ for i in text_content:
         l=text_content1.split(',')
 # print l
 
-os.mkdir('/tmp/ProtPep/')
-out_file='/tmp/ProtPep/seqaligned1.fasta'
+foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
+os.mkdir('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/')
+
+fileitem = form['filename']
+fileattached = fileitem.value
+with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/sequenceInputfile.fasta', 'w') as fout:
+    fout.write(fileattached)
+
+out_file='/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/seqaligned1.fasta'
 muscle='/usr/local/bin/muscle'
 clustalo='/usr/local/bin/clustalo'
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
 pdburl="https://files.rcsb.org/download/"
-PDB="/tmp/ProtPep/PDB/"
+PDB="/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/PDB/"
 pdb_seq_dict=OrderedDict()
 pdb_seq_dict_numbering=OrderedDict()
 pdb_seqfin=OrderedDict()
@@ -164,7 +171,7 @@ def merge_pdb_nonpdb(dict1,dict2):
     combine.update(combine)
     return combine
 
-with open('/tmp/ProtPep/peptideseq.fasta', 'r') as f:
+with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/sequenceInputfile.fasta', 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
         ids_pdb=record.id.split(':')[:1]
         if len(''.join(ids_pdb)) == 4:
@@ -180,7 +187,7 @@ with open('/tmp/ProtPep/peptideseq.fasta', 'r') as f:
         
         pdb_id.append(record.id)
     for data in os.listdir(PDB):
-        paths='/tmp/ProtPep/PDB/'+ data
+        paths='/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/PDB/'+ data
         idschange=paths.split("/")[1][3:]
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
                 
@@ -209,16 +216,16 @@ for keys,vals in pdb_seq_dict.items():
  
 
 combine=dict(list(non_pdb_seq_dictfin.items()) + list(pdb_seqfin.items()))
-with open('/tmp/ProtPep/trimmedfasta.fasta', 'w') as files:
+with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta', 'w') as files:
     for seqids, seqn in combine.items():
         files.write( ">" + seqids)
         files.write("\n")
         files.write (seqn[0])
         files.write("\n") 
 
-Omega_cline = subprocess.call([clustalo, '--infile', '/tmp/ProtPep/trimmedfasta.fasta', '--outfile', out_file])
+Omega_cline = subprocess.call([clustalo, '--infile', '/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta', '--outfile', out_file])
 
-with open('/tmp/ProtPep/file_tab.txt', 'w') as files_tab:
+with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/file_tab.txt', 'w') as files_tab:
     for record in SeqIO.parse(out_file, 'fasta'):
         tabform='{}\t{}'.format(record.description, record.seq)
         files_tab.write(tabform)
@@ -342,7 +349,7 @@ for ids_1,aa_numb1 in NONHatoms_commoncomp.items():
                 updated_indexed_NONHbindingsite.setdefault(ids_1,[]).append(numb2.index(numb_split1[1]))
 
 
-with open("/tmp/ProtPep/file_tab.txt",'r') as files:
+with open("/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/file_tab.txt",'r') as files:
     for line in files:
         
         line1=line.split()[1:]
@@ -887,9 +894,9 @@ print("</table>")
 # print("<br/>")
 
 os.remove(out_file) 
-os.remove('/tmp/ProtPep/trimmedfasta.fasta') 
-shutil.rmtree('/tmp/ProtPep/obsolete') 
-shutil.rmtree('/tmp/ProtPep/PDB')
+os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
+shutil.rmtree('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/obsolete') 
+shutil.rmtree('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/PDB')
 
 print ("</body>")
 print ("</html>")
