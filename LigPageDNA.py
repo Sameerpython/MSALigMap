@@ -610,11 +610,11 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
         print("<td style= 'border: 0'>")
         for H_NH_res in weblogo_align[H_NH_dictkeys]:
             if H_NH_ident_count in H_NH_identical_index:
-                H_NH_underlined="<SPAN STYLE='background-color:red; font-weight:bold; color:white'>%s</SPAN>" %H_NH_res
+                H_NH_underlined="<SPAN STYLE='background-color:red; font-weight:bold; color:white;font-family:monospace;font-size:18px'>%s</SPAN>" %H_NH_res
                 print(H_NH_underlined)
                 H_NH_ident_count+=1
             else:
-                H_NH_no_conse="<b><SPAN STYLE='background-color:powderblue; font-weight:bold; color:black'>%s</SPAN>" %H_NH_res+'</b>'
+                H_NH_no_conse="<b><SPAN STYLE='background-color:powderblue; font-weight:bold; color:black;font-family:monospace;font-size:18px'>%s</SPAN>" %H_NH_res+'</b>'
                 print(H_NH_no_conse)
                 H_NH_ident_count+=1
     else:
@@ -623,11 +623,11 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
         print("<td style= 'border: 0'>")
         for H_NH_res in weblogo_align[H_NH_dictkeys]:
             if H_NH_ident_count in H_NH_identical_index:
-                H_NH_underlined1="<SPAN STYLE='background-color:red; font-weight:bold; color:white'>%s</SPAN>" %H_NH_res
+                H_NH_underlined1="<SPAN STYLE='background-color:red; font-weight:bold; color:white;font-family:monospace;font-size:18px'>%s</SPAN>" %H_NH_res
                 print(H_NH_underlined1)
                 H_NH_ident_count+=1
             else:
-                H_NH_no_conse1="<b><SPAN STYLE='background-color:powderblue; font-weight:bold; color:black'>%s</SPAN>" %H_NH_res+'</b>'
+                H_NH_no_conse1="<b><SPAN STYLE='background-color:powderblue; font-weight:bold; color:black;font-family:monospace;font-size:18px'>%s</SPAN>" %H_NH_res+'</b>'
                 print(H_NH_no_conse1)
                 H_NH_ident_count+=1
         
