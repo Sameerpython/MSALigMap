@@ -9,14 +9,7 @@ print ("<head>")
 print ("<style>")
 #header styling
 print ("""
-.images{
-    width: 100%;
-    height: 200px;
-    background-image: url('Pic.gif') ;
-    background-size: cover;
-    padding-left: 80px;
-    
-}
+
 #container1{
 display:flex;
 flex-direction:column;
