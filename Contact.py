@@ -120,7 +120,7 @@ print ("<p>Email: mats.topel@marine.gu.se</p>")
 print ("</div>")
 
 print("<div id='container3'>")
-print ("<IMG SRC='SH3.jpeg' ALIGN='top' width=120px height=120px  style='border-radius:15px';>")
+print ("<IMG SRC='Sameena.jpeg' ALIGN='top' width=120px height=120px  style='border-radius:15px';>")
 print("<div>")
 print("<div class='container4'>")
 print ("<p><b>Haleemath Sameena Sameer</b></p>")
