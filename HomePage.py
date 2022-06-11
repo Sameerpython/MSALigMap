@@ -79,7 +79,7 @@ print("</ul>")
 
 
 print("<div align='center'>")
-print("<h1 font-size='30px'> Comparing the Binding Residues for the Selected Protein Sequences</h1>")
+print("<h1 font-size='30px'> MSALigMAp - Comparing the Binding Residues for the Selected Protein Sequences</h1>")
 #print "</br>"
 print("<div id='container1'>")
 print("<p id='hello' align='justify' >Proteins binds to ligands (small molecules, DNA, RNA, peptide and proteins) to perform all kinds of important and essential cellular processes. They bind via a network of weak, noncovalent intermolecular interactions such as hydrogen bonding, hydrophobic and electrostatic interactions. Thus, binding of substrate is required for many proteins to function properly. Ligands are recognized in the binding pockets of the proteins through amino acids of specific properties. With increasing number of genomes having now sequenced, computational approach is the method of choice for characterizing proteins using homology-based information. Homology based approach is widely used for functional annotating sequences for identifying ligand, peptide and DNA binding sites etc from proteins with known function that are bound with ligand molecules. The MSALigMap is a tool that can be used for annotating protein sequences based on homology using protein structural information. User should submit protein sequences (homologous) and homologous protein structures bound to ligands of interest or DNA to map the binding sites for the uncharacterized protein sequences.</p>")
