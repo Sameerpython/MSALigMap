@@ -26,7 +26,7 @@ from Bio.Seq import Seq
 import random
 import string
 
-# sys.path.append('/Users/xhasam/anaconda2/lib')
+sys.path.append('/usr/local/Anaconda3/lib/')
 
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
@@ -181,8 +181,14 @@ with open(InputFileName, 'r') as f:
         pdb_id.append(record.id)
     for data in os.listdir(PDBdir):
         paths= PDBdir + '/'+ data 
-        idschange=paths.split("/")[1][3:]
+        # print ('paths',paths)
+        # print("<br/>")
+        idschange =os.path.splitext(paths)[0].split('/')[-1].replace('pdb', '')
+        # idschange=paths.split("/")[1][3:]
+        # print ('idschange',idschange)
+        # print("<br/>")
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
+        # print ('pdbid_dict',pdbid_dict)
                 
         with open(paths, 'r') as f:
             for line in f:
@@ -209,6 +215,7 @@ for keys,vals in pdb_seq_dict.items():
  
 
 combine=dict(list(non_pdb_seq_dictfin.items()) + list(pdb_seqfin.items()))
+# print (combine)
 with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
     for seqids, seqn in combine.items():
         files.write( ">" + seqids)
@@ -217,11 +224,20 @@ with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
         files.write("\n") 
 
 trimmedfastafile = folderpath+'/trimmedfasta.fasta'
-# Omega_cline = ClustalOmegaCommandline(infile=trimmedfastafile, outfile=out_file)
-# print(Omega_cline)
-# os.system('clustalo -in  trimmedfastafile -out out_file')
-Omega_cline = subprocess.run(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i',trimmedfastafile , '-o', out_file])
-print (Omega_cline)
+#Omega_cline = ClustalOmegaCommandline(infile=trimmedfastafile, outfile='Aligned.fasta')
+
+## print(Omega_cline)
+## os.system('clustalo -in  trimmedfastafile -out out_file')
+# Omega_cline = subprocess.call(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i',trimmedfastafile , '-o', out_file, '-v', 'True'])
+# print (Omega_cline)
+child= subprocess.Popen(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i',trimmedfastafile , '-o', out_file],
+                          stdout = subprocess.PIPE,
+                          stderr=subprocess.PIPE)
+child.wait()
+(output,error) = child.communicate()
+if error:
+    print (error)
+print (child)
 # Omega_cline = subprocess.run([Omega_cline])
 # stdout, stderr=Omega_cline()
 

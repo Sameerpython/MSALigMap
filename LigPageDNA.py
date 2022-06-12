@@ -178,7 +178,8 @@ with open(InputFileName, 'r') as f:
         pdb_id.append(record.id)
     for data in os.listdir(PDBdir):
         paths= PDBdir + '/'+ data 
-        idschange=paths.split("/")[1][3:]
+        idschange =os.path.splitext(paths)[0].split('/')[-1].replace('pdb', '')
+        # idschange=paths.split("/")[1][3:]
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
         with open(paths, 'r') as f:
             root,extension= os.path.splitext(paths)
