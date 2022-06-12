@@ -220,7 +220,7 @@ trimmedfastafile = folderpath+'/trimmedfasta.fasta'
 # Omega_cline = ClustalOmegaCommandline(infile=trimmedfastafile, outfile=out_file)
 # print(Omega_cline)
 # os.system('clustalo -in  trimmedfastafile -out out_file')
-Omega_cline = subprocess.run(['/opt/lampp/htdocs/MSALigMap/clustalo', '-in',trimmedfastafile , '-o', out_file])
+Omega_cline = subprocess.run(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i',trimmedfastafile , '-o', out_file])
 print (Omega_cline)
 # Omega_cline = subprocess.run([Omega_cline])
 # stdout, stderr=Omega_cline()

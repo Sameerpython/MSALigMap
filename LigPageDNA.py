@@ -238,7 +238,7 @@ with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
         files.write("\n")
 
 trimmedfastafile = folderpath+'/trimmedfasta.fasta'        
-Omega_out = subprocess.call([clustalo, '--infile', trimmedfastafile,'--outfile',  out_file])
+Omega_out = subprocess.call(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i', trimmedfastafile,'-o',  out_file])
 seq1 = SeqIO.parse(out_file, 'fasta')
 SeqIO.write(seq1, folderpath+'/file_tabDNA.fasta', 'tab')
 record_seq_dict = SeqIO.to_dict(SeqIO.parse(out_file, "fasta"))
