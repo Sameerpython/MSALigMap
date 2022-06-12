@@ -85,6 +85,9 @@ print  ("</textarea>")
 
 print (" <p><input type = 'submit' value = 'Upload' /></p>")
 
+print ("</div>")
+print ("</div>")
+
 print  (" </form>")
 print ("</div>")
 

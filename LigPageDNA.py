@@ -23,6 +23,8 @@ import shutil
 from Bio import motifs 
 from Bio.Seq import Seq 
 import re
+import random
+import string
 # sys.path.append('/Users/xhasam/anaconda2/lib')
 
 # Create instance of FieldStorage
@@ -59,7 +61,7 @@ print ("<title>MSALigMap</title>")
 print ("</head>")
 #print "<h1>CoFact<style=color:blue;>Comp</style></h1>"
 print ("<div align='center'>")
-print ("<img src='Pic.gif' align='middle' width='80%' height='200'")
+# print ("<img src='Pic.gif' align='middle' width='80%' height='200'")
 print ("</div>")
 print ("<body>")
 print ("<ul>")
@@ -67,7 +69,7 @@ print ("<li><a href='HomePage.py'>Home</a></li>")
 print ("<li><a href='ProteinLigand.py'>Protein-Ligand</a></li>")
 print ("<li><a href='ProteinDNA.py'>Protein-DNA</a></li>")
 print ("<li><a href='ProteinPeptide.py'>Protein-Peptide</a></li>")
-print ("<li><a href=''>Contact</a></li>")
+print ("<li><a href='Contact.py'>Contact</a></li>")
 print ("</ul>")
 print ("<div align='center'>")
 print ("<h2> Below is shown the mapped binding sites for the sequences </h2>")
@@ -79,22 +81,33 @@ for i in text_content:
 # print l
 
 foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
-os.mkdir('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/')
+ProtLigfolder= '/opt/lampp/htdocs/MSALigMap/tmp/' + 'ProtDNA'
+
+isExist = os.path.exists(ProtLigfolder)
+
+if not isExist:
+    os.mkdir( ProtLigfolder)
+
+folderpath= ProtLigfolder + '/' +foldernamer 
+os.mkdir(folderpath)
+
 
 fileitem = form['filename']
 fileattached = fileitem.value
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/sequenceInputfile.fasta', 'w') as fout:
+
+InputFileName = folderpath + '/sequenceInputfile.fasta'
+with open(InputFileName, 'wb') as fout:
     fout.write(fileattached)
 
 
-out_file='/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/seqaligned1.fasta'
+out_file= folderpath + '/seqaligned1.fasta'
 muscle='/usr/local/bin/muscle'
-clustalo='/usr/local/bin/clustalo'
+clustalo='/opt/lampp/htdocs/MSALigMap/clustalo'
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
 pdburl="https://files.rcsb.org/download/"
-PDB="/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/PDB/"
+PDBdir= folderpath + "/PDB"
 pdb_seq_dict=OrderedDict()
 pdb_seq_dict_numbering=OrderedDict()
 pdb_seqfin=OrderedDict()
@@ -145,7 +158,7 @@ def merge_pdb_nonpdb(dict1,dict2):
     return combine
 PDB_ids_list= []
 Exp_dict = {}
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/sequenceInputfile.fasta', 'r') as f:
+with open(InputFileName, 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
         ids_pdb=record.id.split(':')[:1]
         chain_name=record.id.split(':')#[1:]
@@ -154,7 +167,7 @@ with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/sequenceInputfile
             ext=chain_name[1]
             PDB_ids_list.append(pdb_code.lower()+':'+ext)
 
-            filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDB, file_format="pdb", overwrite=False)
+            filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDBdir, file_format="pdb", overwrite=False)
         if len(chain_name) == 1:
             non_pdb_id.append(record.id)
             swis_seq=str(record.seq)
@@ -163,8 +176,8 @@ with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/sequenceInputfile
             
         
         pdb_id.append(record.id)
-    for data in os.listdir(PDB):
-        paths='/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/PDB/'+ data
+    for data in os.listdir(PDBdir):
+        paths= PDBdir + '/'+ data 
         idschange=paths.split("/")[1][3:]
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
         with open(paths, 'r') as f:
@@ -217,16 +230,17 @@ for keys,vals in pdb_seq_dict.items():
 
 combine=dict(list(non_pdb_seq_dictfin.items()) + list(pdb_seqfin.items()))
 
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/trimmedfasta.fasta', 'w') as files:
+with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
     for seqids, seqn in combine.items():
         files.write( ">" + seqids)
         files.write("\n")
         files.write (seqn[0])
         files.write("\n")
-        
-Omega_out = subprocess.call([clustalo, '--infile', '/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/trimmedfasta.fasta','--outfile',  out_file])
+
+trimmedfastafile = folderpath+'/trimmedfasta.fasta'        
+Omega_out = subprocess.call([clustalo, '--infile', trimmedfastafile,'--outfile',  out_file])
 seq1 = SeqIO.parse(out_file, 'fasta')
-SeqIO.write(seq1, "/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/file_tabDNA.fasta", "tab")
+SeqIO.write(seq1, folderpath+'/file_tabDNA.fasta', 'tab')
 record_seq_dict = SeqIO.to_dict(SeqIO.parse(out_file, "fasta"))
 
 
@@ -260,7 +274,7 @@ aa = [each_string.title() for each_string in aa]
 ##NUCPLOT
 DNA_binding_res_list2 = []
 DNA_binding_res_list1 = OrderedDict()
-with open("/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/file_tabDNA.fasta",'r') as files:
+with open(folderpath+'/file_tabDNA.fasta','r') as files:
     for line in files:
         pdbcode1=line.split()[0]
         pdbcode1_split=pdbcode1.split(':')
@@ -268,7 +282,7 @@ with open("/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/file_tabDNA.fasta
             url = NUcplot_URL1 + pdbcode1_split[0] +NUcplot_URL2
 
             data = requests.get(url, allow_redirects=True)
-            nuclplotfilename = pdbcode1_split[0] + '_Nucplot.txt'
+            nuclplotfilename = folderpath+'/' + pdbcode1_split[0] + '_Nucplot.txt'
             open(nuclplotfilename, 'wb').write(data.content)
 
 
@@ -327,7 +341,7 @@ def Convert(string):
 lines_DSSP_list=[]
 lines_DSSP_dict ={}
 always_print = False
-with open("/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/file_tabDNA.fasta",'r') as files:
+with open(folderpath+'/file_tabDNA.fasta','r') as files:
     for line in files:
         line1=line.split()[1:]
         SS_list=[]
@@ -643,9 +657,9 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
 print("</table>") 
 
 os.remove(out_file) 
-os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/trimmedfasta.fasta') 
-shutil.rmtree('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/obsolete') 
-shutil.rmtree('/opt/lampp/htdocs/MSALigMap/tmp/ProtDNA/foldernamer/PDB')
+# os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
+shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
+shutil.rmtree(folderpath)
 
 
 

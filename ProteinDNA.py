@@ -77,15 +77,14 @@ print ("<h2> Protein - DNA binding Site Mapping</h1>")
 
 
 print ("<p> Upload protein sequences in fasta format:</p>")
-print  ("<form action='LigPageDNA.py' method = 'post' target = '_blank'>")
+print  ("<form enctype='multipart/form-data' action='LigPageDNA.py' method = 'post' >")
 print  ("<input type='file' id='myFile' name='filename'>")
 
-print (" <p><input type = 'submit' value = 'Submit' /></p>")
 
-print  (" </form>")
+
+print (" <p><input type = 'submit' value = 'Upload' /></p>")
+
 print ("</div>")
-
-
 
 
 print ("</div>")

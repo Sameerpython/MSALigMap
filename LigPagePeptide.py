@@ -22,6 +22,8 @@ import itertools
 import shutil
 from Bio import motifs 
 from Bio.Seq import Seq 
+import random
+import string
 sys.path.append('/Users/xhasam/anaconda2/lib')
 
 # Create instance of FieldStorage
@@ -58,7 +60,6 @@ print ("<title>MSALigMap</title>")
 print ("</head>")
 #print "<h1>CoFact<style=color:blue;>Comp</style></h1>"
 print ("<div align='center'>")
-print ("<img src='Pic.gif' align='middle' width='80%' height='200'")
 print ("</div>")
 print ("<body>")
 print ("<ul>")
@@ -66,7 +67,7 @@ print ("<li><a href='HomePage.py'>Home</a></li>")
 print ("<li><a href='ProteinLigand.py'>Protein-Ligand</a></li>")
 print ("<li><a href='ProteinDNA.py'>Protein-DNA</a></li>")
 print ("<li><a href='ProteinPeptide.py'>Protein-Peptide</a></li>")
-print ("<li><a href=''>Contact</a></li>")
+print ("<li><a href='Contact.py'>Contact</a></li>")
 print ("</ul>")
 print ("<div align='center'>")
 print ("<h2> Below is shown the mapped binding sites for the sequences </h2>")
@@ -79,21 +80,30 @@ for i in text_content:
 # print l
 
 foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
-os.mkdir('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/')
+ProtLigfolder= '/opt/lampp/htdocs/MSALigMap/tmp/' + 'ProtPep'
+
+isExist = os.path.exists(ProtLigfolder)
+
+if not isExist:
+    os.mkdir( ProtLigfolder)
+
+folderpath= ProtLigfolder + '/' +foldernamer 
+os.mkdir(folderpath)
 
 fileitem = form['filename']
 fileattached = fileitem.value
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/sequenceInputfile.fasta', 'w') as fout:
+InputFileName = folderpath + '/sequenceInputfile.fasta'
+with open(InputFileName, 'wb') as fout:
     fout.write(fileattached)
 
-out_file='/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/seqaligned1.fasta'
+out_file= folderpath + '/seqaligned1.fasta'
 muscle='/usr/local/bin/muscle'
-clustalo='/usr/local/bin/clustalo'
+clustalo='/opt/lampp/htdocs/MSALigMap/clustalo'
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
 pdburl="https://files.rcsb.org/download/"
-PDB="/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/PDB/"
+PDBdir= folderpath + "/PDB"
 pdb_seq_dict=OrderedDict()
 pdb_seq_dict_numbering=OrderedDict()
 pdb_seqfin=OrderedDict()
@@ -143,26 +153,7 @@ for items_names in l:
     pdbid_lig.setdefault(items_names_split[0],[]).append(ligand_name)
 
 
-# fileitem = form['filename']
 
-# # with open( 'Applications/XAMPP/xamppfiles/htdocs/MSALigMap/sequence1.fasta', 'w')  as f:
-# if fileitem.filename:
-    
-#     # fileitem.file.write()
-#     # print (fileitem.file.read(4096))
-#     # strip leading path from file name to avoid
-#     # directory traversal attacks
-#     fn = os.path.basename(fileitem.filename)
-#     print ('filename',fn)
-#     print(fileitem.file.read())
-#     ss = open('/Applications/XAMPP/xamppfiles/htdocs/MSALigMap/' + fn, 'wb')
-#     ss.write('SMA')
-#     for lines in fileitem.file.read(4096):
-#         print (lines)
-#     message = 'The file "' + fn + '" was uploaded successfully'
- 
-# else:
-#     message = 'No file was uploaded'
 
 
 
@@ -171,13 +162,13 @@ def merge_pdb_nonpdb(dict1,dict2):
     combine.update(combine)
     return combine
 
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/sequenceInputfile.fasta', 'r') as f:
+with open(InputFileName, 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
         ids_pdb=record.id.split(':')[:1]
         if len(''.join(ids_pdb)) == 4:
             chain_name=record.id.split(':')[1:]
             ext=chain_name[0]
-            filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDB, file_format="pdb", overwrite=False)
+            filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDBdir, file_format="pdb", overwrite=False)
         if len(''.join(ids_pdb)) > 4:
             non_pdb_id.append(record.id)
             swis_seq=str(record.seq)
@@ -186,8 +177,8 @@ with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/sequenceInputfile
             
         
         pdb_id.append(record.id)
-    for data in os.listdir(PDB):
-        paths='/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/PDB/'+ data
+    for data in os.listdir(PDBdir):
+        paths= PDBdir + '/'+ data 
         idschange=paths.split("/")[1][3:]
         pdbid_dict=os.path.splitext(idschange)[0]+':'+ext
                 
@@ -216,16 +207,17 @@ for keys,vals in pdb_seq_dict.items():
  
 
 combine=dict(list(non_pdb_seq_dictfin.items()) + list(pdb_seqfin.items()))
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta', 'w') as files:
+with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
     for seqids, seqn in combine.items():
         files.write( ">" + seqids)
         files.write("\n")
         files.write (seqn[0])
         files.write("\n") 
 
-Omega_cline = subprocess.call([clustalo, '--infile', '/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta', '--outfile', out_file])
+trimmedfastafile = folderpath+'/trimmedfasta.fasta'
+Omega_cline = subprocess.call([clustalo, '--infile', trimmedfastafile, '--outfile', out_file])
 
-with open('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/file_tab.txt', 'w') as files_tab:
+with open(folderpath+ '/file_tab.txt', 'w') as files_tab:
     for record in SeqIO.parse(out_file, 'fasta'):
         tabform='{}\t{}'.format(record.description, record.seq)
         files_tab.write(tabform)
@@ -349,7 +341,7 @@ for ids_1,aa_numb1 in NONHatoms_commoncomp.items():
                 updated_indexed_NONHbindingsite.setdefault(ids_1,[]).append(numb2.index(numb_split1[1]))
 
 
-with open("/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/file_tab.txt",'r') as files:
+with open(folderpath + "/file_tab.txt",'r') as files:
     for line in files:
         
         line1=line.split()[1:]
@@ -894,9 +886,9 @@ print("</table>")
 # print("<br/>")
 
 os.remove(out_file) 
-os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
-shutil.rmtree('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/obsolete') 
-shutil.rmtree('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/PDB')
+# os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
+shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
+shutil.rmtree(folderpath)
 
 print ("</body>")
 print ("</html>")
