@@ -7,8 +7,7 @@ import os
 import argparse
 import sys
 from Bio import SeqIO 
-from Bio.Align.Applications import MuscleCommandline
-from Bio.Align.Applications import ClustalOmegaCommandline
+from Bio.Align.Applications import MafftCommandline
 #from StringIO import StringIO
 from Bio import AlignIO
 from Bio.PDB import *
@@ -101,8 +100,7 @@ with open(InputFileName, 'wb') as fout:
 
 
 out_file= folderpath + '/seqaligned1.fasta'
-muscle='/usr/local/bin/muscle'
-clustalo='/opt/lampp/htdocs/MSALigMap/clustalo'
+mafft_exe = "mafft"
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
@@ -238,8 +236,14 @@ with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
         files.write (seqn[0])
         files.write("\n")
 
-trimmedfastafile = folderpath+'/trimmedfasta.fasta'        
-Omega_out = subprocess.call(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i', trimmedfastafile,'-o',  out_file])
+trimmedfastafile = folderpath+'/trimmedfasta.fasta'     
+
+mafft_cline = MafftCommandline(mafft_exe, input=trimmedfastafile)
+stdout, stderr = mafft_cline()
+
+with open(out_file, "w") as handle:
+    handle.write(stdout)   
+# Omega_out = subprocess.call(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i', trimmedfastafile,'-o',  out_file])
 seq1 = SeqIO.parse(out_file, 'fasta')
 SeqIO.write(seq1, folderpath+'/file_tabDNA.fasta', 'tab')
 record_seq_dict = SeqIO.to_dict(SeqIO.parse(out_file, "fasta"))
@@ -371,7 +375,7 @@ with open(folderpath+'/file_tabDNA.fasta','r') as files:
                             dsspwebpagelink=requests.get(dssp_finalurl_concatenate)
                             for dssppagelines in dsspwebpagelink.iter_lines():
                                 lines_in_dssp = dssppagelines
-                                if not lines_in_dssp.startswith('<') and len(lines_in_dssp)>3:
+                                if not lines_in_dssp.startswith(b'<') and len(lines_in_dssp)>3:
                                     linesdssp_part1=lines_in_dssp.split()
                                     if len(linesdssp_part1)>5 and linesdssp_part1[2]==pdb_chain:
                                         if str(linesdssp_part1[4]).startswith(('H','B','E','G','I','T', 'S')):

@@ -7,8 +7,7 @@ import os
 import argparse
 import sys
 from Bio import SeqIO 
-from Bio.Align.Applications import MuscleCommandline
-from Bio.Align.Applications import ClustalOmegaCommandline
+from Bio.Align.Applications import MafftCommandline
 #from StringIO import StringIO
 from Bio import AlignIO
 from Bio.PDB import *
@@ -97,8 +96,7 @@ with open(InputFileName, 'wb') as fout:
 # print l
 # print (folderpath)
 out_file= folderpath + '/seqaligned1.fasta'
-muscle='/usr/local/bin/muscle'
-clustalo='/opt/lampp/htdocs/MSALigMap/clustalo'
+mafft_exe = "mafft"
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
@@ -224,22 +222,12 @@ with open(folderpath+'/trimmedfasta.fasta', 'w') as files:
         files.write("\n") 
 
 trimmedfastafile = folderpath+'/trimmedfasta.fasta'
-#Omega_cline = ClustalOmegaCommandline(infile=trimmedfastafile, outfile='Aligned.fasta')
+mafft_cline = MafftCommandline(mafft_exe, input=trimmedfastafile)
+stdout, stderr = mafft_cline()
 
-## print(Omega_cline)
-## os.system('clustalo -in  trimmedfastafile -out out_file')
-# Omega_cline = subprocess.call(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i',trimmedfastafile , '-o', out_file, '-v', 'True'])
-# print (Omega_cline)
-child= subprocess.Popen(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i',trimmedfastafile , '-o', out_file],
-                          stdout = subprocess.PIPE,
-                          stderr=subprocess.PIPE)
-child.wait()
-(output,error) = child.communicate()
-if error:
-    print (error)
-print (child)
-# Omega_cline = subprocess.run([Omega_cline])
-# stdout, stderr=Omega_cline()
+with open(out_file, "w") as handle:
+    handle.write(stdout)
+
 
 with open(folderpath+ '/file_tab.txt', 'w') as files_tab:
     for record in SeqIO.parse(out_file, 'fasta'):
@@ -388,7 +376,7 @@ with open(folderpath + "/file_tab.txt",'r') as files:
                             for dssppagelines in dsspwebpagelink.iter_lines():
                                 lines_in_dssp = dssppagelines
                                 
-                                if not lines_in_dssp.startswith('<') and len(lines_in_dssp)>3:
+                                if not lines_in_dssp.startswith(b'<') and len(lines_in_dssp)>3:
                                     linesdssp_part1=lines_in_dssp.split()
                                     if len(linesdssp_part1)>5 and linesdssp_part1[2]==pdb_chain:
                                         if str(linesdssp_part1[4]).startswith(('H','B','E','G','I','T', 'S')):

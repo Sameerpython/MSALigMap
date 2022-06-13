@@ -48,7 +48,9 @@ ADD *.py /opt/lampp/htdocs/MSALigMap/
 ADD *.jpg /opt/lampp/htdocs/MSALigMap/
 ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
 RUN chmod +x /opt/lampp/htdocs/MSALigMap/*.py
-RUN ln -s /usr/bin/clustalo 
+#RUN ln -s /usr/bin/clustalo 
+#RUN pip install biotite
+RUN sudo  apt-get install -y  mafft
 
 # TO BE MOVED
 #RUN apt-get install -y nano
