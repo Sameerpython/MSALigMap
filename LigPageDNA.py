@@ -243,7 +243,6 @@ stdout, stderr = mafft_cline()
 
 with open(out_file, "w") as handle:
     handle.write(stdout)   
-# Omega_out = subprocess.call(['/opt/lampp/htdocs/MSALigMap/clustalo', '-i', trimmedfastafile,'-o',  out_file])
 seq1 = SeqIO.parse(out_file, 'fasta')
 SeqIO.write(seq1, folderpath+'/file_tabDNA.fasta', 'tab')
 record_seq_dict = SeqIO.to_dict(SeqIO.parse(out_file, "fasta"))
@@ -376,8 +375,11 @@ with open(folderpath+'/file_tabDNA.fasta','r') as files:
                             for dssppagelines in dsspwebpagelink.iter_lines():
                                 lines_in_dssp = dssppagelines
                                 if not lines_in_dssp.startswith(b'<') and len(lines_in_dssp)>3:
-                                    linesdssp_part1=lines_in_dssp.split()
+                                    linesdssp_part2=lines_in_dssp.split()
+                                    linesdssp_part1 = [w1.decode('utf8').replace('b', '') for w1 in linesdssp_part2]
+                                    
                                     if len(linesdssp_part1)>5 and linesdssp_part1[2]==pdb_chain:
+                                        # print (linesdssp_part1)
                                         if str(linesdssp_part1[4]).startswith(('H','B','E','G','I','T', 'S')):
                                             if len(linesdssp_part1[4])==1:
                                                 aa_SS=linesdssp_part1[4]
@@ -663,7 +665,7 @@ print("</table>")
 
 os.remove(out_file) 
 # os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
-shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
+# shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
 shutil.rmtree(folderpath)
 
 

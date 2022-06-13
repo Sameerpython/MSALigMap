@@ -377,7 +377,9 @@ with open(folderpath + "/file_tab.txt",'r') as files:
                                 lines_in_dssp = dssppagelines
                                 
                                 if not lines_in_dssp.startswith(b'<') and len(lines_in_dssp)>3:
-                                    linesdssp_part1=lines_in_dssp.split()
+                                    linesdssp_part2=lines_in_dssp.split()
+                                    linesdssp_part1 = [w1.decode('utf8').replace('b', '') for w1 in linesdssp_part2]
+                                    
                                     if len(linesdssp_part1)>5 and linesdssp_part1[2]==pdb_chain:
                                         if str(linesdssp_part1[4]).startswith(('H','B','E','G','I','T', 'S')):
                                             aa_SS=linesdssp_part1[4]
@@ -891,7 +893,7 @@ print("</table>")
 
 os.remove(out_file) 
 # os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
-shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
+# shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
 shutil.rmtree(folderpath)
 
 print ("</body>")
