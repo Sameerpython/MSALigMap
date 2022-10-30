@@ -28,18 +28,6 @@ sys.path.append('/Users/xhasam/anaconda2/lib')
 # Create instance of FieldStorage
 form = cgi.FieldStorage()
 
-  
-# Get data from field
-if form.getvalue('textcontent'):
-   text_content = form.getvalue('textcontent')
-else:
-   text_content = "Not entered"
-   
-#if form.getvalue('textcontent'):
-#   lig_content = form.getvalue('ligatom')
-#else:
-#   lig_content = "Not entered"
-
 print ("Content-type:text/html\r\n\r\n")
 print ("<html>")
 print ("<head>")
@@ -52,6 +40,28 @@ print ("li a {display: block;color: white;text-align: center;padding: 16px;font-
 print ("li a:hover { background-color: #111111;}")
 print ("table, th, td { border: 2px solid black;}")
 print (".footer { position: absolute; left: 0; bottom: 0; width: 100%; height:60px;  background-color: #808080; color: white; text-align: center; }")
+
+print ("""
+
+.container-1{
+width: 90%;
+height: 75%
+border:1px solid black;
+padding-top:20px;
+-webkit-box-shadow: 5px 5px 15px 5px #000000; 
+box-shadow: 5px 5px 15px 5px #000000;
+
+}
+.container-2{
+width: 90%;
+height: 25%
+border:1px solid black;
+padding-top:20px;
+-webkit-box-shadow: 5px 5px 15px 5px #000000; 
+box-shadow: 5px 5px 15px 5px #000000;
+
+}
+""")
 print ("</style>")
 #Style ends here
 
@@ -71,37 +81,13 @@ print ("</ul>")
 print ("<div align='center'>")
 print ("<h2> Below is shown the mapped binding sites for the sequences </h2>")
 
-
-#capturing the entered pdb ids into list
-for i in text_content:
-        text_content1=text_content.replace(' ', '')
-        l=text_content1.split(',')
-# print l
-
-foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
-ProtLigfolder= '/opt/lampp/htdocs/MSALigMap/tmp/' + 'ProtPep'
-
-isExist = os.path.exists(ProtLigfolder)
-
-if not isExist:
-    os.mkdir( ProtLigfolder)
-
-folderpath= ProtLigfolder + '/' +foldernamer 
-os.mkdir(folderpath)
-
-fileitem = form['filename']
-fileattached = fileitem.value
-InputFileName = folderpath + '/sequenceInputfile.fasta'
-with open(InputFileName, 'wb') as fout:
-    fout.write(fileattached)
-
-out_file= folderpath + '/seqaligned1.fasta'
+###Start of inititaions
 mafft_exe = "mafft"
 pdbl=PDBList()
 ppb=PPBuilder()
 pdb_id=[] 
 pdburl="https://files.rcsb.org/download/"
-PDBdir= folderpath + "/PDB"
+
 pdb_seq_dict=OrderedDict()
 pdb_seq_dict_numbering=OrderedDict()
 pdb_seqfin=OrderedDict()
@@ -139,16 +125,64 @@ DSSP_SS=OrderedDict()
 Prot_AA=OrderedDict()
 aa_text_dict=OrderedDict()
 PDB_code_ligand_dict ={}
-for items_names in l:
+###ENd of inititaions
 
-    items_names_split= items_names.split('_')
-    ligand_name= items_names_split[1]
-    PDB_id = items_names_split[0].split(':')[0]
-    PDB_code_ligand_dict[PDB_id]={}
-    Chain_id = items_names_split[0].split(':')[1] 
-    PDB_code_ligand_dict[PDB_id]['Chain']=Chain_id
-    PDB_code_ligand_dict[PDB_id]['Ligand']=ligand_name
-    pdbid_lig.setdefault(items_names_split[0],[]).append(ligand_name)
+#capturing the entered pdb ids into list
+###Modified
+###Modified END part
+
+###Updated  part
+value_dict={}
+for key in form.keys():
+       
+       
+      variable = (key)
+      value = (form.getvalue(variable))
+      
+      print ("<br/>")
+      if variable== 'LigSelection':
+            
+            for ids in value:
+                  
+                  variable_split_PDBCode=ids.split(':')[0]
+                  variable_split_PDBChain=ids.split(':')[1]
+                  
+                  value_dict.setdefault(variable_split_PDBCode, []).append(variable_split_PDBChain)
+      
+      if variable == 'SequencePath':
+            InputFileName= value
+             
+
+
+for PDBkey, chainValues in value_dict.items():
+       items_names_split= PDBkey + ':' + chainValues[0]
+
+       PDB_code_ligand_dict[PDBkey]={}
+       PDB_code_ligand_dict[PDBkey]['Chain']=chainValues[0]
+       PDB_code_ligand_dict[PDBkey]['Ligand']=chainValues[1]
+
+       pdbid_lig.setdefault(items_names_split,[]).append(chainValues[1])
+
+
+
+
+folderpath= os.path.split(InputFileName)[0]
+
+
+##End of Updated part
+out_file= folderpath + '/seqaligned1.fasta'
+PDBdir= folderpath + "/PDB"
+
+# for items_names in l:
+
+#     items_names_split= items_names.split('_')
+#     ligand_name= items_names_split[1]
+#     PDB_id = items_names_split[0].split(':')[0]
+#     PDB_code_ligand_dict[PDB_id]={}
+#     Chain_id = items_names_split[0].split(':')[1] 
+#     PDB_code_ligand_dict[PDB_id]['Chain']=Chain_id
+#     PDB_code_ligand_dict[PDB_id]['Ligand']=ligand_name
+#     pdbid_lig.setdefault(items_names_split[0],[]).append(ligand_name)
 
 
 
@@ -160,12 +194,15 @@ def merge_pdb_nonpdb(dict1,dict2):
     combine.update(combine)
     return combine
 
+PDBCode_FromSequenceFile={}
 with open(InputFileName, 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
         ids_pdb=record.id.split(':')[:1]
         if len(''.join(ids_pdb)) == 4:
             chain_name=record.id.split(':')[1:]
             ext=chain_name[0]
+            
+            PDBCode_FromSequenceFile[ids_pdb[0]]=ext
             filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDBdir, file_format="pdb", overwrite=False)
         if len(''.join(ids_pdb)) > 4:
             non_pdb_id.append(record.id)
@@ -198,6 +235,16 @@ with open(InputFileName, 'r') as f:
 print("<br/>")
 print("<br/>")
 
+#Checking PDB ids in sequence file (using here pdbid_dict) and PDB ids in selected forms (using here PDB_code_ligand_dict) are the same
+
+for Checkkeys, Checkvalues in PDBCode_FromSequenceFile.items():
+    if not  PDBCode_FromSequenceFile[Checkkeys] == PDB_code_ligand_dict[Checkkeys]['Chain']:
+        print("<h3>The selected protein chain for the PDB code and that in the uploaded sequence file are not the same</h3>")
+        sys.exit()
+
+
+
+###End of this part
 
 
 for keys,vals in pdb_seq_dict.items():
@@ -459,7 +506,7 @@ prot_Idsname=list(Prot_AA.keys())
 digits1=len(max(prot_Idsname))
 f1 = '{0:>%d}: ' % (digits1)
 
-
+print ("<div class = container-1>")
 print("<b>Color coded secondary structure elements </b> ")
 print('<br/>')
 structurecode="<span style='background-color:#8B008B'><font color='white'>B = beta-bridge residue</font></span>, <span style='background-color:#FFFF00'>E = extended strand (in beta ladder)</span>, <span style='background-color:#CD5C5C'><font color='white'>G = 3/10-helix</font></span>, <span style='background-color:#FF0000'><font color='white'>H= alpha-helix</font></span>,    <span style='background-color:#FA8072'>I = Pi helix</span>, <span style='background-color: #00FF00'> S = bend </span>, <span style='background-color: #008000'><font color='white'>T = H-bonded turn</font></span>"
@@ -666,7 +713,10 @@ for H_pdbid in aa_text_dict.keys():
             H_residuesX='X'
             H_weblogo_gap_to_X.setdefault(H_pdbid, []).append(H_residuesX)
 
+print ("</div>")
 
+
+print ("<div class=container-2>")
 print("<div align='center'><b>Alignment of hydrogen bonded interacting residues</b></div>")
 print("<br/>")
 
@@ -876,7 +926,7 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
     print("</td>")
     print("</tr>")
 print("</table>")
-
+print ("</div>")
 # #making H_NH_weblogo
 # protmotif=[]
 # H_NONH='HNONH'+'.svg'

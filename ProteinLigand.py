@@ -69,17 +69,17 @@ print ("</ul>")
 
 
 print ("<div align='center'>")
-print ("<h2> Comparing the Binding Residues for the Selected Protein Sequences</h2>")
+print ("<h2> Mapping the Ligand Binding Amino Acid Residues for the Unannotated Protein Sequences</h2>")
 print ("<div id='container1'>")
 
 
 print ("<h2> Protein - Ligand Binding Site Mapping</h1>")
 
 print ("<p> Upload protein sequences in fasta format:</p>")
-print  ("<form enctype='multipart/form-data' action='LigPage.py' method = 'post' >")
+print  ("<form enctype='multipart/form-data' action='LigPage1.py' method = 'post' >")
 print  ("<input type='file' id='myFile' name='filename'>")
 
-print ("<p> Enter PDB ids and Ligand ids (eg: 3WXB:A_NDP):</p>")
+print ("<p> Enter PDB ids and Ligand ids (eg: 3WXB:A):</p>")
 print  ("<textarea rows='2' cols='10' name = 'textcontent' cols = '10' rows = '10'>")
 print  ("</textarea>")
 

@@ -51,6 +51,29 @@ print ("li a {display: block;color: white;text-align: center;padding: 16px;font-
 print ("li a:hover { background-color: #111111;}")
 print ("table, th, td { border: 2px solid black;}")
 print (".footer { position: absolute; left: 0; bottom: 0; width: 100%; height:60px;  background-color: #808080; color: white; text-align: center; }")
+
+print ("""
+
+.container-1{
+width: 90%;
+height: 75%
+border:1px solid black;
+padding-top:20px;
+-webkit-box-shadow: 5px 5px 15px 5px #000000; 
+box-shadow: 5px 5px 15px 5px #000000;
+
+}
+.container-2{
+width: 90%;
+height: 25%
+border:1px solid black;
+padding-top:20px;
+-webkit-box-shadow: 5px 5px 15px 5px #000000; 
+box-shadow: 5px 5px 15px 5px #000000;
+
+}
+""")
+
 print ("</style>")
 #Style ends here
 
@@ -72,29 +95,32 @@ print ("<h2> Below is shown the mapped binding sites for the sequences </h2>")
 
 #print lig_content
 #capturing the entered pdb ids into list
-for i in text_content:
-        text_content1=text_content.replace(' ', '')
-        l=text_content1.split(',')
+variable = ""
+value = ""
+r = ""
+value_dict={}
+lig_sel=[]
+l=""
+InputFileName=""
 
-foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
-ProtLigfolder= '/opt/lampp/htdocs/MSALigMap/tmp/' + 'ProtLig'
+l=[]
+for key in form.keys():
+    if key !='ligatom':
+        variable = str(key)
+        value = str(form.getvalue(variable))
+        if variable == 'SequencePath':
+             InputFileName= value
 
-isExist = os.path.exists(ProtLigfolder)
+        if variable== 'LigSelection':
+             l.append(value)
+        value_dict.setdefault(variable,[]).append(value)
+        r += "<p>"+ variable +", "+ value +"</p>\n"
 
-if not isExist:
-    os.mkdir( ProtLigfolder)
 
-folderpath= ProtLigfolder + '/' +foldernamer 
-os.mkdir(folderpath)
 
-fileitem = form['filename']
-fileattached = fileitem.value
-InputFileName = folderpath + '/sequenceInputfile.fasta'
-with open(InputFileName, 'wb') as fout:
-    fout.write(fileattached)
+folderpath= os.path.split(InputFileName)[0]
 
-# print l
-# print (folderpath)
+
 out_file= folderpath + '/seqaligned1.fasta'
 mafft_exe = "mafft"
 pdbl=PDBList()
@@ -140,6 +166,7 @@ Prot_AA=OrderedDict()
 aa_text_dict=OrderedDict()
 PDB_code_ligand_dict ={}
 for items_names in l:
+    print (items_names)
 
     items_names_split= items_names.split('_')
     ligand_name= items_names_split[1]
@@ -162,12 +189,14 @@ def merge_pdb_nonpdb(dict1,dict2):
     combine.update(combine)
     return combine
 
+PDBCode_FromSequenceFile={}
 with open(InputFileName, 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
         ids_pdb=record.id.split(':')[:1]
         if len(''.join(ids_pdb)) == 4:
             chain_name=record.id.split(':')[1:]
             ext=chain_name[0]
+            PDBCode_FromSequenceFile[ids_pdb[0]]=ext
             filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDBdir, file_format="pdb", overwrite=False)
         if len(''.join(ids_pdb)) > 4:
             non_pdb_id.append(record.id)
@@ -205,6 +234,13 @@ with open(InputFileName, 'r') as f:
 print("<br/>")
 print("<br/>")
 
+#Checking PDB ids in sequence file (using here pdbid_dict) and PDB ids in selected forms (using here PDB_code_ligand_dict) are the same
+
+for Checkkeys, Checkvalues in PDBCode_FromSequenceFile.items():
+    if Checkkeys in PDB_code_ligand_dict.keys():
+        if not  PDBCode_FromSequenceFile[Checkkeys] == PDB_code_ligand_dict[Checkkeys]['Chain']:
+            print("<h3>The selected protein chain for the PDB code and that in the uploaded sequence file are not the same</h3>")
+            sys.exit()
 
 
 for keys,vals in pdb_seq_dict.items():
@@ -462,6 +498,7 @@ prot_Idsname=list(Prot_AA.keys())
 digits1=len(max(prot_Idsname))
 f1 = '{0:>%d}: ' % (digits1)
 
+print ("<div class = container-1>")
 
 print("<b>Color coded secondary structure elements </b> ")
 print('<br/>')
@@ -667,6 +704,10 @@ for H_pdbid in aa_text_dict.keys():
             H_residuesX='X'
             H_weblogo_gap_to_X.setdefault(H_pdbid, []).append(H_residuesX)
 
+print ("</div>")
+
+
+print ("<div class=container-2>")
 
 print("<div align='center'><b>Alignment of hydrogen bonded interacting residues</b></div>")
 print("<br/>")
@@ -876,6 +917,7 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
     print("</tr>")
 print("</table>")
 
+print ("</div>")
 # #making H_NH_weblogo
 # protmotif=[]
 # H_NONH='HNONH'+'.svg'

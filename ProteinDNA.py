@@ -68,7 +68,7 @@ print ("</ul>")
 
 
 print ("<div align='center'>")
-print ("<h2> Comparing the Binding Residues for the Selected Protein Sequences</h2>")
+print ("<h2> Mapping the DNA Binding Amino Acid Residues for the Unannotated Protein Sequences</h2>")
 print ("<div id='container1'>")
 
 
@@ -77,8 +77,12 @@ print ("<h2> Protein - DNA binding Site Mapping</h1>")
 
 
 print ("<p> Upload protein sequences in fasta format:</p>")
-print  ("<form enctype='multipart/form-data' action='LigPageDNA.py' method = 'post' >")
+print  ("<form enctype='multipart/form-data' action='DNAPage1.py' method = 'post' >")
 print  ("<input type='file' id='myFile' name='filename'>")
+
+print ("<p> Enter PDB ids (eg: 2LEX):</p>")
+print  ("<textarea rows='2' cols='10' name = 'textcontent' cols = '10' rows = '10'>")
+print  ("</textarea>")
 
 
 

@@ -11,13 +11,15 @@ RUN apt-get install -y vim-tiny
 RUN apt-get install -y libgl1-mesa-glx
 RUN apt-get install -y cron
 RUN apt-get install -y clustalo
+RUN apt-get install -y  mafft
 
 # Set the working directory
 RUN mkdir -p /opt/MSALigMap
 WORKDIR /opt/MSALigMap
 
 # Install XAMPP
-RUN wget https://downloadsapachefriends.global.ssl.fastly.net/8.1.6/xampp-linux-x64-8.1.6-0-installer.run
+#RUN wget https://downloadsapachefriends.global.ssl.fastly.net/8.1.6/xampp-linux-x64-8.1.6-0-installer.run
+RUN wget https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.1.6/xampp-linux-x64-8.1.6-0-installer.run
 RUN chmod +x xampp-linux-x64-8.1.6-0-installer.run
 RUN sudo /opt/MSALigMap/xampp-linux-x64-8.1.6-0-installer.run
 
@@ -50,7 +52,8 @@ ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
 RUN chmod +x /opt/lampp/htdocs/MSALigMap/*.py
 #RUN ln -s /usr/bin/clustalo 
 #RUN pip install biotite
-RUN sudo  apt-get install -y  mafft
+#RUN sudo  apt-get install -y  mafft
+#RUN sudo apt-get install -y dssp
 
 # TO BE MOVED
 #RUN apt-get install -y nano

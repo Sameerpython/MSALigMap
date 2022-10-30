@@ -53,6 +53,27 @@ print ("li a {display: block;color: white;text-align: center;padding: 16px;font-
 print ("li a:hover { background-color: #111111;}")
 print ("table, th, td { border: 2px solid black;}")
 print (".footer { position: absolute; left: 0; bottom: 0; width: 100%; height:60px;  background-color: #808080; color: white; text-align: center; }")
+print ("""
+
+.container-1{
+width: 90%;
+height: 75%
+border:1px solid black;
+padding-top:20px;
+-webkit-box-shadow: 5px 5px 15px 5px #000000; 
+box-shadow: 5px 5px 15px 5px #000000;
+
+}
+.container-2{
+width: 90%;
+height: 25%
+border:1px solid black;
+padding-top:20px;
+-webkit-box-shadow: 5px 5px 15px 5px #000000; 
+box-shadow: 5px 5px 15px 5px #000000;
+
+}
+""")
 print ("</style>")
 #Style ends here
 
@@ -78,25 +99,59 @@ for i in text_content:
         text_content1=text_content.replace(' ', '')
         l=text_content1.split(',')
 # print l
+# Information of the selected ligands and PDB ids from LigPage.py
+# print (form)
 
-foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
-ProtLigfolder= '/opt/lampp/htdocs/MSALigMap/tmp/' + 'ProtDNA'
-
-isExist = os.path.exists(ProtLigfolder)
-
-if not isExist:
-    os.mkdir( ProtLigfolder)
-
-folderpath= ProtLigfolder + '/' +foldernamer 
-os.mkdir(folderpath)
+if "DNASelection" not in form :
+      print ("<h1>Error!</h1>")
+      print ("<h3>Please fill in the PDB code and sequence file fields.</h3>")
 
 
-fileitem = form['filename']
-fileattached = fileitem.value
 
-InputFileName = folderpath + '/sequenceInputfile.fasta'
-with open(InputFileName, 'wb') as fout:
-    fout.write(fileattached)
+
+PDB_Selected_list=[]
+for key in form.keys():
+       
+       
+      variable = (key)
+      value = (form.getvalue(variable))
+    #   print (variable,value)
+    #   print ("<br/>")
+      if variable== 'DNASelection':
+            # print ('DNASelection',value)
+            PDB_Selected_list.append(value)
+            
+
+      
+      if variable == 'SequencePath':
+            InputFileName= value
+             
+# print(PDB_Selected_list)
+# print (InputFileName)
+
+
+
+folderpath= os.path.split(InputFileName)[0]
+# print (folderpath)
+
+# foldernamer= ''.join(random.choices(string.ascii_letters, k=4))
+# ProtLigfolder= '/opt/lampp/htdocs/MSALigMap/tmp/' + 'ProtDNA'
+
+# isExist = os.path.exists(ProtLigfolder)
+
+# if not isExist:
+#     os.mkdir( ProtLigfolder)
+
+# folderpath= ProtLigfolder + '/' +foldernamer 
+# os.mkdir(folderpath)
+
+
+# fileitem = form['filename']
+# fileattached = fileitem.value
+
+# InputFileName = folderpath + '/sequenceInputfile.fasta'
+# with open(InputFileName, 'wb') as fout:
+#     fout.write(fileattached)
 
 
 out_file= folderpath + '/seqaligned1.fasta'
@@ -174,6 +229,18 @@ with open(InputFileName, 'r') as f:
             
         
         pdb_id.append(record.id)
+    
+    #Checking PDB ids in sequence file and PDB ids in selected forms are the same
+    #print ("PDB_ids_list",PDB_ids_list, "-->","PDB_Selected_list", PDB_Selected_list)
+    res = [x.isupper() for x in PDB_ids_list if x not in PDB_Selected_list]
+
+    if  res:
+        print("<h3>The selected PDB codes and that in the uploaded sequence file are not the same</h3>")
+        sys.exit()
+    
+    
+
+    
     for data in os.listdir(PDBdir):
         paths= PDBdir + '/'+ data 
         idschange =os.path.splitext(paths)[0].split('/')[-1].replace('pdb', '')
@@ -449,7 +516,7 @@ prot_Idsname=list(Prot_AA.keys())
 digits1=len(max(prot_Idsname))
 f1 = '{0:>%d}: ' % (digits1)
 
-
+print ("<div class = container-1>")
 print("<b>Color coded secondary structure elements </b> ")
 print('<br/>')
 structurecode="<span style='background-color:#8B008B'><font color='white'>B = beta-bridge residue</font></span>, <span style='background-color:#FFFF00'>E = extended strand (in beta ladder)</span>, <span style='background-color:#CD5C5C'><font color='white'>G = 3/10-helix</font></span>, <span style='background-color:#FF0000'><font color='white'>H= alpha-helix</font></span>,    <span style='background-color:#FA8072'>I = Pi helix</span>, <span style='background-color: #00FF00'> S = bend </span>, <span style='background-color: #008000'><font color='white'>T = H-bonded turn</font></span>"
@@ -612,6 +679,10 @@ for pdbid in aa_text_dict.keys():
 # print("<br/>")
 # print("<br/>")
 
+print ("</div>")
+
+
+print ("<div class=container-2>")
 #print("Alignment of DNA interaction Residues")
 print("<div align='center'><b>Alignment  of DNA binding residues</b></div>")
 print("<br/>")
@@ -662,7 +733,7 @@ for H_NH_dictkeys in sorted(weblogo_align.keys()):
     print("</td>")
     print("</tr>")
 print("</table>") 
-
+print ("</div>")
 os.remove(out_file) 
 # os.remove('/opt/lampp/htdocs/MSALigMap/tmp/ProtPep/foldernamer/trimmedfasta.fasta') 
 # shutil.rmtree('/opt/lampp/htdocs/MSALigMap/obsolete') 
