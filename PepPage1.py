@@ -70,7 +70,7 @@ print ("<li><a href='ProteinPeptide.py'>Protein-Peptide</a></li>")
 print ("<li><a href='Contact.py'>Contact</a></li>")
 print ("</ul>")
 print ("<div align='center'>")
-print ("<h2> Select the Chains of Interest! </h2>")#print lig_content
+print ("<h2> Select a Protein chain and a Peptide chain of Interest! </h2>")#print lig_content
 
 ##Sequence file
 #print lig_content
@@ -121,7 +121,7 @@ if text_content != None:
         pdbid_chain_dict={}
         for i in l:
             each= i#.split(':')
-            pdbcode= each
+            pdbcode= each.upper()
             ##chain=each[1] # i am removing the +"="+"[]"
             pdbid_list.append(pdbcode)
             #pdbid_chain_dict[pdbcode]=chain #(not used i later part of the code)
@@ -166,7 +166,11 @@ if text_content != None:
 
 
 
+        
+
         # Form for selecting the Peptide chains of interest for the USERR
+        
+
         print ("<form enctype='multipart/form-data' action='LigPagePeptide.py' method = 'post' target = '_blank'>")
         
         print ("<table style=width:50%>")
@@ -196,8 +200,13 @@ if text_content != None:
                 print ("<td align=center>", dk[chainKey]['Length'],"</td>")
                 print ("<td align=center>", dk[chainKey]['Type'],"</td>")
                 print ("<td align=center>")
-                values_add = k + ':' + chainKey 
-                print  ("<input type='checkbox' name='LigSelection' value='%s'/>" % (values_add))
+                if dk[chainKey]['Type']== 'Protein':
+                    values_add = k + ':' + chainKey 
+                    print  ("<input type='radio' name='ProteinSelection' value='%s'/>" % (values_add))
+                
+                if dk[chainKey]['Type']== 'Peptide':
+                    values_add = k + ':' + chainKey 
+                    print  ("<input type='radio' name='LigSelection' value='%s'/>" % (values_add))
                 
                 print ("</td>")
                 print ("</tr>")

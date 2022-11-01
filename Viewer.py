@@ -2,21 +2,18 @@
 
 # Import modules for CGI handling 
 import cgi, cgitb 
+cgitb.enable()
+import numpy as np
+import matplotlib.pyplot as plt
+import biotite.sequence as seq
+import biotite.sequence.io.fasta as fasta
+import biotite.sequence.graphics as graphics
 
-# Create instance of FieldStorage
-form = cgi.FieldStorage()
-
-# Get data from fields
-if form.getvalue('subject'):
-   subject = form.getvalue('subject')
-else:
-   subject = "Not set"
 
 
 print ("Content-type:text/html\r\n\r\n")
 print ("<html>")
 print ("<head>")
-
 print ("<style>")
 #header styling
 # print ("""
@@ -70,27 +67,21 @@ print ("</ul>")
 
 print ("<div align='center'>")
 print ("<h2> Mapping the Ligand Binding Amino Acid Residues for the Unannotated Protein Sequences</h2>")
-print ("<div id='container1'>")
+print ("<br>")
+print ("<br>")
 
+# Order alignment according to the guide tree
+alignment = alignment[:, order]
+ids = [ids[i] for i in order]
 
-print ("<h2> Protein - Ligand Binding Site Mapping</h1>")
+fig = plt.figure(figsize=(8.0, 20.0))
+ax = fig.add_subplot(111)
+graphics.plot_alignment_type_based(
+    ax, alignment, labels=ids, show_numbers=True, spacing=2.0
+)
+fig.tight_layout()
 
-print ("<p> Upload protein sequences in fasta format:</p>")
-print  ("<form enctype='multipart/form-data' action='LigPage1.py' method = 'post' >")
-print  ("<input type='file' id='myFile' name='filename'>")
-
-print ("<p> Enter PDB ids and Ligand ids (eg: 3WXB:A):</p>")
-print  ("<textarea rows='2' cols='10' name = 'textcontent' cols = '10' rows = '10'>")
-print  ("</textarea>")
-
-print (" <p><input type = 'submit' value = 'Upload' /></p>")
-
-print ("</div>")
-print ("</div>")
-
-print  (" </form>")
-print ("</div>")
-
+plt.show()
 
 
 print ("</div>")

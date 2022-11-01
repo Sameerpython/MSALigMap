@@ -12,6 +12,11 @@ RUN apt-get install -y libgl1-mesa-glx
 RUN apt-get install -y cron
 RUN apt-get install -y clustalo
 RUN apt-get install -y  mafft
+RUN apt-get install -y python3-pip
+RUN pip install panel bokeh
+RUN pip install nglview
+RUN pip install biotite
+#RUN pip install pybioviz
 
 # Set the working directory
 RUN mkdir -p /opt/MSALigMap
@@ -38,7 +43,9 @@ RUN echo "* 0 * * * root rm /opt/lampp/htdocs/MSALigMap/tmp/*.zip" >> /etc/cront
 # Install MSALigMap
 RUN mkdir /opt/lampp/htdocs/MSALigMap
 RUN mkdir /opt/lampp/htdocs/MSALigMap/tmp
+#RUN mkdir /opt/lampp/htdocs/MSALigMap/jalview-js
 RUN chmod 775 /opt/lampp/htdocs/MSALigMap/tmp
+#RUN chmod 775 /opt/lampp/htdocs/MSALigMap/jalview-js
 RUN chmod 775 /opt/lampp/htdocs/MSALigMap
 RUN chgrp -R daemon /opt/lampp/htdocs/MSALigMap
 
@@ -49,11 +56,13 @@ ADD *.py /opt/lampp/htdocs/MSALigMap/
 #ADD *.png /opt/lampp/htdocs/MSALigMap/
 ADD *.jpg /opt/lampp/htdocs/MSALigMap/
 ADD *.jpeg /opt/lampp/htdocs/MSALigMap/
+#ADD jalview-js /opt/lampp/htdocs/MSALigMap/jalview-js
 RUN chmod +x /opt/lampp/htdocs/MSALigMap/*.py
 #RUN ln -s /usr/bin/clustalo 
 #RUN pip install biotite
 #RUN sudo  apt-get install -y  mafft
 #RUN sudo apt-get install -y dssp
+
 
 # TO BE MOVED
 #RUN apt-get install -y nano

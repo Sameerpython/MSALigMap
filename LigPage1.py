@@ -68,7 +68,7 @@ print ("<li><a href='ProteinPeptide.py'>Protein-Peptide</a></li>")
 print ("<li><a href='Contact.py'>Contact</a></li>")
 print ("</ul>")
 print ("<div align='center'>")
-print ("<h2> Select the Ligands of interest! </h2>")#print lig_content
+print ("<h2> Select a Ligand of interest! </h2>")#print lig_content
 
 ##Sequence file
 #print lig_content
@@ -125,8 +125,8 @@ if text_content != None:
             
             each= i.split(':')
             
-            pdbcode= each[0]
-            chain=each[1] # i am removing the +"="+"[]"
+            pdbcode= each[0].upper()
+            chain=each[1].upper() # i am removing the +"="+"[]"
             pdbid_list.append(each)
             
             pdbid_chain_dict[pdbcode]=chain
@@ -146,61 +146,77 @@ if text_content != None:
 
 
         #Listing the PDB ids and their bound ligands
+        
         for link,id  in zip(url_list,list(pdbid_chain_dict.keys())):
                 
                 count=count+1
                 try:
+                    
                     f=urllib.request.urlopen(link)
                     f=f.readlines()
                     #print (f)
+                    PDBCode_Chains=[]
                     for li in f:
                         if li.startswith(b'HET '):
                             
                             li= li.decode('UTF-8').split()
+                            PDBCode_Chains.append(li[2])
+                            
                             if li[2]==pdbid_chain_dict[id]:
                                 f2=li[1]
                                 prot_lig_dict.setdefault(id,[]).append(f2)
+                            if  not pdbid_chain_dict[id] in PDBCode_Chains:
+                                print ("<h3>Error! Please enter the correct chain for the PDB code and try again!</h3>")
+                                sys.exit()
+                            
+                                
                             
                             
                 except:
-                    print("<p>The entered PDB code is not identitifed in the PDB database. Try again!</p>")
+                    if pdbid_chain_dict=={}:
+                        print("<p>Error! Check the PDB code and the chain. Try again!</p>")
+
+        ## Checking 
+        
 
 
 
         # Form for selecting the ligands for interest for the USER
-        print ("<form enctype='multipart/form-data' action='LigPage.py' method = 'post' target = '_blank'>")
-        print ("<table style=width:50%>")
-        print ("<tr>")
-        print ("<th>PDB ID</th>")
-        print ("<th colspan=2>LIGANDS</th>")
+        if not prot_lig_dict =={}:
 
-        
-
-
-        for k,dk in prot_lig_dict.items():
-
-            count= len(dk)
+            print ("<form enctype='multipart/form-data' action='LigPage.py' method = 'post' target = '_blank'>")
+            print ("<table style=width:50%>")
             print ("<tr>")
-            print ("<th rowspan='%d'>"% count,k,":",pdbid_chain_dict[k], "</th>")
-            #print "</tr>"
-            for x in dk:
-                value_code = k + ':' +  pdbid_chain_dict[k]
-                print ("<td align=center>", "%s" % x,"</td>")
-                print ("<td align=center>")
-                values_add = value_code + '_' + x
-                print  ("<input type='checkbox' name='LigSelection' value='%s'/>" % (values_add))
-                
-                print ("</td>")
-                print ("</tr>")
-                print ("<br/>")
-                print ("<br/>")
-        print ("</table>")
-        print ("<br/>")
+            print ("<th>PDB ID</th>")
+            print ("<th colspan=2>LIGANDS</th>")
 
-        print ("<input type = 'submit'  value = 'Submit'  />")
-        print ("<input type = 'reset'  value = 'Clear'  />")
-        print ("<input type='hidden' name='SequencePath' value='%s'>" %(InputFileName))
-        print ("</form>")
+            
+
+
+            for k,dk in prot_lig_dict.items():
+
+                count= len(dk)
+                print ("<tr>")
+                print ("<th rowspan='%d'>"% count,k,":",pdbid_chain_dict[k], "</th>")
+                #print "</tr>"
+                for x in dk:
+                    value_code = k + ':' +  pdbid_chain_dict[k]
+                    print ("<td align=center>", "%s" % x,"</td>")
+                    print ("<td align=center>")
+                    values_add = value_code + '_' + x
+                    print  ("<input type='radio' name='LigSelection' value='%s'/>" % (values_add))
+                    
+                    print ("</td>")
+                    print ("</tr>")
+                    print ("<br/>")
+                    print ("<br/>")
+            print ("</table>")
+            print ("<br/>")
+
+            print ("<input type = 'submit'  value = 'Submit'  />")
+            print ("<input type = 'reset'  value = 'Clear'  />")
+            print ("<input type='hidden' name='SequencePath' value='%s'>" %(InputFileName))
+            print ("</form>")
     
     except:
         print ("<p><b>Please enter PDB code with chain and try again!</b></p>")

@@ -213,12 +213,13 @@ PDB_ids_list= []
 Exp_dict = {}
 with open(InputFileName, 'r') as f:
     for record in SeqIO.parse(f, "fasta"):
+        
         ids_pdb=record.id.split(':')[:1]
         chain_name=record.id.split(':')#[1:]
         if len(chain_name) > 1:
-            pdb_code=chain_name[0]
-            ext=chain_name[1]
-            PDB_ids_list.append(pdb_code.lower()+':'+ext)
+            pdb_code=chain_name[0].upper()
+            ext=chain_name[1].upper()
+            PDB_ids_list.append(pdb_code+':'+ext)
 
             filesset=pdbl.download_pdb_files(ids_pdb, obsolete=False, pdir=PDBdir, file_format="pdb", overwrite=False)
         if len(chain_name) == 1:
@@ -232,7 +233,7 @@ with open(InputFileName, 'r') as f:
     
     #Checking PDB ids in sequence file and PDB ids in selected forms are the same
     #print ("PDB_ids_list",PDB_ids_list, "-->","PDB_Selected_list", PDB_Selected_list)
-    res = [x.isupper() for x in PDB_ids_list if x not in PDB_Selected_list]
+    res = [x for x in PDB_ids_list if x not in PDB_Selected_list]
 
     if  res:
         print("<h3>The selected PDB codes and that in the uploaded sequence file are not the same</h3>")

@@ -110,16 +110,16 @@ if text_content != None:
     
     for i in l:
         
-        each= i#.split(':')
-        pdbcode= each[0]
-        chain=each[1] # i am removing the +"="+"[]"
+        each= i.upper()#.split(':')
+        pdbcode= each[0].upper()
+        chain=each[1].upper() # i am removing the +"="+"[]"
         pdbid_list.append(each)
         pdbid_chain_dict[pdbcode]=chain
     
 
     #linking the PDB url address to the selected PDB ids
     for x in l:
-        pdbcodename= x.split(':')[0]
+        pdbcodename= x.split(':')[0].upper()
         pdbid=url+pdbcodename#+".pdb"
         url_list.append(pdbid)
 
@@ -130,7 +130,7 @@ if text_content != None:
     Protein_DNAComplex_dict={}
     for link,id  in zip(url_list,pdbid_list):#list(pdbid_chain_dict.keys()
 
-        PDB_id = id #+ '_' + Chain
+        PDB_id = id.upper() #+ '_' + Chain
         Protein_DNAComplex_dict[PDB_id]={}
 
         page = urlopen(link)

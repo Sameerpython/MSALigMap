@@ -133,6 +133,7 @@ PDB_code_ligand_dict ={}
 
 ###Updated  part
 value_dict={}
+print (form)
 for key in form.keys():
        
        
@@ -140,20 +141,29 @@ for key in form.keys():
       value = (form.getvalue(variable))
       
       print ("<br/>")
-      if variable== 'LigSelection':
+      if variable== 'ProteinSelection':
+            print (value)
+            variable_split_PDBCode=value.split(':')[0]
+            variable_split_PDBChain=value.split(':')[1]
             
-            for ids in value:
-                  
-                  variable_split_PDBCode=ids.split(':')[0]
-                  variable_split_PDBChain=ids.split(':')[1]
-                  
-                  value_dict.setdefault(variable_split_PDBCode, []).append(variable_split_PDBChain)
-      
+            ## Option for making a diction with protein chain and peptide chain
+            #value_dict[variable_split_PDBCode]={}
+            #value_dict[variable_split_PDBCode]['ProteinChain']= variable_split_PDBChain
+            
+                
+            value_dict.setdefault(variable_split_PDBCode, []).append(variable_split_PDBChain)
+      if variable== 'LigSelection':
+            variable_split_PDBCode=value.split(':')[0]
+            variable_split_PeptideChain=value.split(':')[1]
+            value_dict.setdefault(variable_split_PDBCode, []).append(variable_split_PeptideChain)
+            
+            #value_dict[variable_split_PDBCode]['PeptideChain']= variable_split_PeptideChain
+            
       if variable == 'SequencePath':
             InputFileName= value
              
 
-
+print (value_dict)
 for PDBkey, chainValues in value_dict.items():
        items_names_split= PDBkey + ':' + chainValues[0]
 
