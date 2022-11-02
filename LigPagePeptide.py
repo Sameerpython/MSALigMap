@@ -133,7 +133,7 @@ PDB_code_ligand_dict ={}
 
 ###Updated  part
 value_dict={}
-print (form)
+#print (form)
 for key in form.keys():
        
        
@@ -142,7 +142,7 @@ for key in form.keys():
       
       print ("<br/>")
       if variable== 'ProteinSelection':
-            print (value)
+            #print (value)
             variable_split_PDBCode=value.split(':')[0]
             variable_split_PDBChain=value.split(':')[1]
             
@@ -153,9 +153,9 @@ for key in form.keys():
                 
             value_dict.setdefault(variable_split_PDBCode, []).append(variable_split_PDBChain)
       if variable== 'LigSelection':
-            variable_split_PDBCode=value.split(':')[0]
-            variable_split_PeptideChain=value.split(':')[1]
-            value_dict.setdefault(variable_split_PDBCode, []).append(variable_split_PeptideChain)
+            variable_split_PDBCode1=value.split(':')[0]
+            variable_split_PeptideChain1=value.split(':')[1]
+            value_dict.setdefault(variable_split_PDBCode1, []).append(variable_split_PeptideChain1)
             
             #value_dict[variable_split_PDBCode]['PeptideChain']= variable_split_PeptideChain
             
@@ -163,7 +163,7 @@ for key in form.keys():
             InputFileName= value
              
 
-print (value_dict)
+#print (value_dict)
 for PDBkey, chainValues in value_dict.items():
        items_names_split= PDBkey + ':' + chainValues[0]
 
@@ -172,7 +172,6 @@ for PDBkey, chainValues in value_dict.items():
        PDB_code_ligand_dict[PDBkey]['Ligand']=chainValues[1]
 
        pdbid_lig.setdefault(items_names_split,[]).append(chainValues[1])
-
 
 
 
