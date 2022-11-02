@@ -17,6 +17,8 @@ RUN pip install panel bokeh
 RUN pip install nglview
 RUN pip install biotite
 #RUN pip install pybioviz
+RUN pip install plotly==5.11.0
+RUN pip install dash
 
 # Set the working directory
 RUN mkdir -p /opt/MSALigMap
