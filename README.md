@@ -50,7 +50,7 @@ For example: python MSALigMap.py DNA DNA_binding_samplefile.fasta
 * sudo docker build -t msaligmap .
 
 ## Interactive session
-* sudo docker run -p 80:80 -ti msaligmap:latest
+* sudo docker run -p 8080:80 -ti msaligmap:latest
 
 # The page will be available at
 * http://localhost/MSALigMap/HomePage.py

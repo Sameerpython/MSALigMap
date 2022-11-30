@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 # Initialise apt-get
-RUN apt-get update
+RUN apt-get update --fix-missing
 
 # Install programs needed for the server to run
 RUN apt-get install -y net-tools
