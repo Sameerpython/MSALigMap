@@ -162,11 +162,12 @@ if text_content != None:
                         
                 except:
                     print("<p>The entered PDB code is not identitifed in PDB database. Try again!</p>")
-        
-
-
 
         
+
+
+
+        print("<h3>Sequences that are shorter than 100 amino acid in length is named as peptide</h3>")
 
         # Form for selecting the Peptide chains of interest for the USERR
         

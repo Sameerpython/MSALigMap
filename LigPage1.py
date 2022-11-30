@@ -37,7 +37,7 @@ if form.getvalue('textcontent'):
    text_content = form.getvalue('textcontent')
 
 else:
-   text_content = "No*** PDB*** code*** entered!"
+   text_content = ""
    
 print ("Content-type:text/html\r\n\r\n")
 print ("<html>")
@@ -160,20 +160,24 @@ if text_content != None:
                         if li.startswith(b'HET '):
                             
                             li= li.decode('UTF-8').split()
+                            
+                            
                             PDBCode_Chains.append(li[2])
                             
                             if li[2]==pdbid_chain_dict[id]:
                                 f2=li[1]
                                 prot_lig_dict.setdefault(id,[]).append(f2)
-                            if  not pdbid_chain_dict[id] in PDBCode_Chains:
-                                print ("<h3>Error! Please enter the correct chain for the PDB code and try again!</h3>")
-                                sys.exit()
                             
+                    if  not pdbid_chain_dict[id] in PDBCode_Chains:
+                        print ("<h3>Error! Please enter the correct chain for the PDB code and try again!</h3>")
+                        sys.exit()
+                        
                                 
                             
                             
                 except:
                     if pdbid_chain_dict=={}:
+
                         print("<p>Error! Check the PDB code and the chain. Try again!</p>")
 
         ## Checking 
@@ -219,7 +223,8 @@ if text_content != None:
             print ("</form>")
     
     except:
-        print ("<p><b>Please enter PDB code with chain and try again!</b></p>")
+        print ("<br/>")
+        print ("<h3><b>ERROR!! Please enter PDB code with chain and try again!</b></h3>")
 
 
 print ("</body>")

@@ -239,7 +239,7 @@ print("<br/>")
 for Checkkeys, Checkvalues in PDBCode_FromSequenceFile.items():
     if Checkkeys in PDB_code_ligand_dict.keys():
         if not  PDBCode_FromSequenceFile[Checkkeys] == PDB_code_ligand_dict[Checkkeys]['Chain']:
-            print("<h3>The selected protein chain for the PDB code and that in the uploaded sequence file are not the same</h3>")
+            print(f"<h3>ERROR! The typed protein <font color='blue'><b> CHAIN </b></font> for the PDB code <font color='red'><b> '{Checkkeys}'</b></font> is <font color='red'><b> '{PDB_code_ligand_dict[Checkkeys]['Chain']}' </b></font> whereas the <font color='blue'> <b> CHAIN</b></font> for PDB code <font color='red'><b> '{Checkkeys}'</b></font> in the uploaded sequence file is <font color='red'><b> '  {PDBCode_FromSequenceFile[Checkkeys]} '</b></font>, which are not the same.</h3>")
             sys.exit()
 
 
